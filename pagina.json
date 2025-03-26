@@ -1,0 +1,41 @@
+{
+  "navbar": {
+    "color": "#333",
+    "items": ["Home", "About", "Services", "Contact"]
+  },
+  "header": {
+    "color": "#444",
+    "title": "Bienvenidos a Mi Sitio Web",
+    "subtitle": "La mejor experiencia online"
+  },
+  "hero": {
+    "color": "#555",
+    "background_image": "hero.jpg",
+    "headline": "Descubre nuestros servicios"
+  },
+  "section_foto_texto": {
+    "color": "#666",
+    "image": "foto.jpg",
+    "text": "Esta es una sección con una imagen y texto descriptivo."
+  },
+  "section_varias_fotos": {
+    "color": "#777",
+    "images": ["foto1.jpg", "foto2.jpg", "foto3.jpg"]
+  },
+  "section_texto": {
+    "color": "#888",
+    "text": "Aquí puedes incluir cualquier texto que desees mostrar."
+  },
+  "section_contacto": {
+    "color": "#999",
+    "contact_text": "Contáctanos para más información.",
+    "google_maps": "<iframe src='https://www.google.com/maps/embed?...' width='600' height='450' style='border:0;' allowfullscreen='' loading='lazy'></iframe>"
+  },
+  "section_recuadros": {
+    "color": "#aaa",
+    "boxes": [
+      {"title": "Misión", "text": "Ofrecer el mejor servicio."},
+      {"title": "Visión", "text": "Innovar constantemente."}
+    ]
+  }
+}
