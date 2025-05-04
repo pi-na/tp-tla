@@ -16,6 +16,7 @@
  */
 %x MULTILINE_COMMENT
 
+
 /**
  * Reusable patterns.
  *
@@ -30,6 +31,16 @@
 <MULTILINE_COMMENT>[[:space:]]+		{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>[^*]+			{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>.				{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+
+/* Tokens JSON básicos */
+"{"                                 { return OPEN_BRACE; }
+"}"                                 { return CLOSE_BRACE; }
+"\["                                { return OPEN_BRACKET; }
+"\]"                                { return CLOSE_BRACKET; }
+":"                                 { return COLON; }
+","                                 { return COMMA; }
+
+
 
 "-"									{ return ArithmeticOperatorLexemeAction(createLexicalAnalyzerContext(), SUB); }
 "*"									{ return ArithmeticOperatorLexemeAction(createLexicalAnalyzerContext(), MUL); }
