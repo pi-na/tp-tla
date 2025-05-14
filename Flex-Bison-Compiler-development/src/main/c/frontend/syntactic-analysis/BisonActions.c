@@ -85,3 +85,23 @@ Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Express
 	}
 	return program;
 }
+
+Object* createObject(char* type, Entries* entries) {
+	Object* obj = malloc(sizeof(Object));
+	obj->type = type;
+	obj->entries = entries;
+	return obj;
+}
+
+Entries* createEntries() {
+	Entries* entries = malloc(sizeof(Entries));
+	entries->entries = NULL;
+	entries->count = 0;
+	return entries;
+}
+
+void addEntry(Entries* entries, Entry* entry) {
+	entries->count++;
+	entries->entries = realloc(entries->entries, sizeof(Entry*) * entries->count);
+	entries->entries[entries->count - 1] = entry;
+}
