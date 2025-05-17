@@ -1,7 +1,6 @@
 %{
-
 #include "BisonActions.h"
-
+#include "../lexical-analysis/Tokens.h"
 %}
 
 // You touch this, and you die.
@@ -22,6 +21,18 @@
 	Entries* entries;
 	StyleProperties* styleProperties;
 	Value* value;
+	HTMLElement* htmlElement;
+	HTMLElementHTML* htmlElementHTML;
+	HTMLElementHead* htmlElementHead;
+	HTMLElementTitle* htmlElementTitle;
+	HTMLElementBody* htmlElementBody;
+	HTMLElementDiv* htmlElementDiv;
+	HTMLElementP* htmlElementP;
+	HTMLElementH1* htmlElementH1;
+	HTMLElementImg* htmlElementImg;
+	HTMLElementA* htmlElementA;
+	HTMLElementCenter* htmlElementCenter;
+	Program* program;
 }
 
 /**
@@ -35,6 +46,14 @@
 %destructor { releaseConstant($$); } <constant>
 %destructor { releaseExpression($$); } <expression>
 %destructor { releaseFactor($$); } <factor>
+%destructor { releaseValue($$); } <value>
+%destructor { releaseObject($$); } <object>
+%destructor { releaseArray($$); } <array>
+%destructor { releaseEntry($$); } <entry>
+%destructor { releaseEntries($$); } <entries>
+%destructor { releaseStyleProperties($$); } <styleProperties>
+%destructor { releaseHTMLElement($$); } <htmlElement>
+%destructor { releaseProgram($$); } <program>
 
 /** Terminals. */
 %token <token> OPEN_BRACE CLOSE_BRACE
@@ -56,6 +75,7 @@
 %token <string> IDENTIFIER
 
 /** Non-terminals. */
+%type <program> program
 %type <object> object
 %type <array> array arrayElements
 %type <entries> entries
@@ -64,6 +84,17 @@
 %type <entries> imgEntries aEntries centerEntries
 %type <entry> entry
 %type <value> value
+%type <htmlElement> htmlElement
+%type <htmlElementHTML> htmlElementHTML
+%type <htmlElementHead> htmlElementHead
+%type <htmlElementTitle> htmlElementTitle
+%type <htmlElementBody> htmlElementBody
+%type <htmlElementDiv> htmlElementDiv
+%type <htmlElementP> htmlElementP
+%type <htmlElementH1> htmlElementH1
+%type <htmlElementImg> htmlElementImg
+%type <htmlElementA> htmlElementA
+%type <htmlElementCenter> htmlElementCenter
 
 /**
  * Precedence and associativity.
@@ -77,10 +108,10 @@
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
 
-program: object
+program: object { $$ = createProgram($1); }
 	;
 
-object: OPEN_BRACE entries CLOSE_BRACE
+object: OPEN_BRACE entries CLOSE_BRACE { $$ = createObject("object", $2); }
 	;
 
 entries: htmlEntries     /* Para el elemento raíz HTML */
