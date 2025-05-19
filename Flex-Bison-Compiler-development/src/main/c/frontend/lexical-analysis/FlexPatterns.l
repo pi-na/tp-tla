@@ -32,11 +32,10 @@
 <MULTILINE_COMMENT>[^*]+			{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>.				{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
-/* Tokens JSON básicos */
 "{"                                 { return OPEN_BRACE; }
 "}"                                 { return CLOSE_BRACE; }
-"\["                                { return OPEN_BRACKET; }
-"\]"                                { return CLOSE_BRACKET; }
+\[                                { return OPEN_BRACKET; }
+\]                                { return CLOSE_BRACKET; }
 ":"                                 { return COLON; }
 ","                                 { return COMMA; }
 
@@ -55,13 +54,11 @@
 [[:space:]]+						{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 .									{ return UnknownLexemeAction(createLexicalAnalyzerContext()); }
 
-// Literales JSON
 \"([^\"\\]|\\.)*\"         { return StringLexemeAction(createLexicalAnalyzerContext()); }
 -?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?   { return NumberLexemeAction(createLexicalAnalyzerContext()); }
 true|false                 { return BooleanLexemeAction(createLexicalAnalyzerContext(), yytext[0] == 't' ? TRUE : FALSE); }
 null                       { return NullLexemeAction(createLexicalAnalyzerContext()); }
 
-// Palabras clave (case sensitive)
 "type"                     { return KeywordLexemeAction(createLexicalAnalyzerContext(), TYPE); }
 "content"                  { return KeywordLexemeAction(createLexicalAnalyzerContext(), CONTENT); }
 "style"                    { return KeywordLexemeAction(createLexicalAnalyzerContext(), STYLE); }
@@ -79,9 +76,8 @@ null                       { return NullLexemeAction(createLexicalAnalyzerContex
 "for"                      { return KeywordLexemeAction(createLexicalAnalyzerContext(), FOR); }
 "while"                    { return KeywordLexemeAction(createLexicalAnalyzerContext(), WHILE); }
 
-// Operadores
 "&&"                       { return OperatorLexemeAction(createLexicalAnalyzerContext(), AND); }
-"\|\|"                     { return OperatorLexemeAction(createLexicalAnalyzerContext(), OR); }
+\|\|                       { return OperatorLexemeAction(createLexicalAnalyzerContext(), OR); }
 "!"                        { return OperatorLexemeAction(createLexicalAnalyzerContext(), NOT); }
 "=="                       { return OperatorLexemeAction(createLexicalAnalyzerContext(), EQ); }
 "!="                       { return OperatorLexemeAction(createLexicalAnalyzerContext(), NEQ); }
@@ -90,64 +86,6 @@ null                       { return NullLexemeAction(createLexicalAnalyzerContex
 "<"                        { return OperatorLexemeAction(createLexicalAnalyzerContext(), LT); }
 ">"                        { return OperatorLexemeAction(createLexicalAnalyzerContext(), GT); }
 
-// Identificadores (variables, nombres de claves no reservadas)
 [a-zA-Z_][a-zA-Z0-9_]*     { return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 
 %%
-
-#include "FlexExport.h"
-
-Token StringLexemeAction(LexicalAnalyzerContext * ctx) {
-    _logLexicalAnalyzerContext(__FUNCTION__, ctx);
-    ctx->semanticValue->string = strdup(ctx->lexeme); // Asume que semanticValue tiene un campo string
-    destroyLexicalAnalyzerContext(ctx);
-    return STRING;
-}
-
-Token NumberLexemeAction(LexicalAnalyzerContext * ctx) {
-    _logLexicalAnalyzerContext(__FUNCTION__, ctx);
-    if (strchr(ctx->lexeme, '.') || strchr(ctx->lexeme, 'e') || strchr(ctx->lexeme, 'E')) {
-        ctx->semanticValue->real = atof(ctx->lexeme);
-        destroyLexicalAnalyzerContext(ctx);
-        return REAL;
-    } else {
-        ctx->semanticValue->integer = atoi(ctx->lexeme);
-        destroyLexicalAnalyzerContext(ctx);
-        return INTEGER;
-    }
-}
-
-Token BooleanLexemeAction(LexicalAnalyzerContext * ctx, Token token) {
-    _logLexicalAnalyzerContext(__FUNCTION__, ctx);
-    ctx->semanticValue->boolean = (token == TRUE);
-    destroyLexicalAnalyzerContext(ctx);
-    return token;
-}
-
-Token NullLexemeAction(LexicalAnalyzerContext * ctx) {
-    _logLexicalAnalyzerContext(__FUNCTION__, ctx);
-    ctx->semanticValue->null = 1;
-    destroyLexicalAnalyzerContext(ctx);
-    return NULL_TOKEN;
-}
-
-Token KeywordLexemeAction(LexicalAnalyzerContext * ctx, Token token) {
-    _logLexicalAnalyzerContext(__FUNCTION__, ctx);
-    ctx->semanticValue->token = token;
-    destroyLexicalAnalyzerContext(ctx);
-    return token;
-}
-
-Token OperatorLexemeAction(LexicalAnalyzerContext * ctx, Token token) {
-    _logLexicalAnalyzerContext(__FUNCTION__, ctx);
-    ctx->semanticValue->token = token;
-    destroyLexicalAnalyzerContext(ctx);
-    return token;
-}
-
-Token IdentifierLexemeAction(LexicalAnalyzerContext * ctx) {
-    _logLexicalAnalyzerContext(__FUNCTION__, ctx);
-    ctx->semanticValue->identifier = strdup(ctx->lexeme);
-    destroyLexicalAnalyzerContext(ctx);
-    return IDENTIFIER;
-}
