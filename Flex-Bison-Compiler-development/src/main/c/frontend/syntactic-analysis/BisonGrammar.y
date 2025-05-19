@@ -21,6 +21,9 @@
 	Entries* entries;
 	StyleProperties* styleProperties;
 	Value* value;
+	Constant* constant;
+	Expression* expression;
+	Factor* factor;
 	HTMLElement* htmlElement;
 	HTMLElementHTML* htmlElementHTML;
 	HTMLElementHead* htmlElementHead;
@@ -259,11 +262,7 @@ centerEntries: TYPE COLON CENTER_TAG COMMA centerRequiredEntries centerOptionalE
 	| centerOptionalEntries centerRequiredEntries COMMA TYPE COLON CENTER_TAG          /* type al final */
 	;
 
-centerRequiredEntries: CONTENT COLON centerContent
-	;
-
-centerContent: value
-	| array
+centerRequiredEntries: CONTENT COLON value
 	;
 
 centerOptionalEntries: /* empty */
@@ -303,5 +302,33 @@ arrayElements: /* empty */
 	| value
 	| value COMMA arrayElements
 	;
+
+/* Reglas para value */
+value: STRING { $$ = createStringValue($1); }
+    | INTEGER { $$ = createIntegerValue($1); }
+    | REAL { $$ = createRealValue($1); }
+    | TRUE { $$ = createBooleanValue(1); }
+    | FALSE { $$ = createBooleanValue(0); }
+    | NULL_TOKEN { $$ = createNullValue(); }
+    | object { $$ = createObjectValue($1); }
+    | array { $$ = createArrayValue($1); }
+    ;
+
+/* Reglas para img */
+imgEntries: TYPE COLON IMG_TAG COMMA imgRequiredEntries imgOptionalEntries    /* type primero */
+    | imgRequiredEntries COMMA TYPE COLON IMG_TAG imgOptionalEntries          /* type en medio */
+    | imgOptionalEntries TYPE COLON IMG_TAG COMMA imgRequiredEntries          /* type antes del final */
+    | imgOptionalEntries imgRequiredEntries COMMA TYPE COLON IMG_TAG          /* type al final */
+    ;
+
+imgRequiredEntries: SRC COLON STRING COMMA ALT COLON STRING
+    | ALT COLON STRING COMMA SRC COLON STRING
+    ;
+
+imgOptionalEntries: /* empty */
+    | COMMA STYLE COLON styleObject imgOptionalEntries
+    | COMMA CLASS COLON STRING imgOptionalEntries
+    | COMMA ID COLON STRING imgOptionalEntries
+    ;
 
 %%

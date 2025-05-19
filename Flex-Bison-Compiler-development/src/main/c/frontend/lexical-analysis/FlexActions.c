@@ -86,7 +86,7 @@ Token BooleanLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token
 
 Token NullLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->null = 1;
+	lexicalAnalyzerContext->semanticValue->token = NULL_TOKEN;
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 	return NULL_TOKEN;
 }
@@ -163,7 +163,7 @@ Token HTMLTagLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token
 
 Token IdentifierLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->identifier = strdup(lexicalAnalyzerContext->lexeme);
+	lexicalAnalyzerContext->semanticValue->string = strdup(lexicalAnalyzerContext->lexeme);
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 	return IDENTIFIER;
 }

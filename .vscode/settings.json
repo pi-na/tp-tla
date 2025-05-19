@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "bisonactions.h": "c"
-    }
+    },
+    "cmake.sourceDirectory": "/Users/jperalb/Documents/ITBA/TLA/tp-tla/Flex-Bison-Compiler-development"
 }
