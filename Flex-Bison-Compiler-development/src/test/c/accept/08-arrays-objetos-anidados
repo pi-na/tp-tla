@@ -1,0 +1,22 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "body",
+      "content": [
+        {
+          "type": "h1",
+          "content": "Título Principal"
+        },
+        {
+          "type": "p",
+          "content": "Párrafo 1"
+        },
+        {
+          "type": "p",
+          "content": "Párrafo 2"
+        }
+      ]
+    }
+  ]
+} 

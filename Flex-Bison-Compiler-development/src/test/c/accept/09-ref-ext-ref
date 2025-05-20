@@ -1,0 +1,25 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "body",
+      "content": [
+        {
+          "type": "div",
+          "id": "seccion1",
+          "content": "Primera sección"
+        },
+        {
+          "type": "a",
+          "ref": "seccion1",
+          "content": "Ir a sección 1"
+        },
+        {
+          "type": "a",
+          "ext-ref": "https://www.ejemplo.com",
+          "content": "Enlace externo"
+        }
+      ]
+    }
+  ]
+} 

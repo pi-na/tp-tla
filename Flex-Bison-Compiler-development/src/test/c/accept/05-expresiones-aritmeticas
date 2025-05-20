@@ -1,0 +1,16 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "body",
+      "content": {
+        "type": "div",
+        "style": {
+          "width": {"op": "+", "left": 100, "right": 50},
+          "height": {"op": "*", "left": 200, "right": 2}
+        },
+        "content": "Div con cálculos"
+      }
+    }
+  ]
+} 

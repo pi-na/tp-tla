@@ -1,0 +1,19 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "body",
+      "content": {
+        "type": "div",
+        "id": "contenedor",
+        "class": "principal",
+        "content": {
+          "type": "img",
+          "src": "imagen.jpg",
+          "alt": "Descripción",
+          "content": ""
+        }
+      }
+    }
+  ]
+} 
