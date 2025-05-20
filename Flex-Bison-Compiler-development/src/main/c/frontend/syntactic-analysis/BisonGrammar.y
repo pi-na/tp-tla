@@ -19,6 +19,7 @@
 	Expression * expression;
 	Factor * factor;
 	Program * program;
+	Object * object;
 }
 
 /**
@@ -41,6 +42,8 @@
 %token <token> MUL
 %token <token> OPEN_PARENTHESIS
 %token <token> SUB
+%token <token> OPEN_BRACE
+%token <token> CLOSE_BRACE
 
 %token <token> UNKNOWN
 
@@ -49,6 +52,7 @@
 %type <expression> expression
 %type <factor> factor
 %type <program> program
+%type <object> object
 
 /**
  * Precedence and associativity.
@@ -79,4 +83,14 @@ factor: OPEN_PARENTHESIS expression CLOSE_PARENTHESIS				{ $$ = ExpressionFactor
 constant: INTEGER													{ $$ = IntegerConstantSemanticAction($1); }
 	;
 
+/** TODO: ARRAYS [] */
+object: OPEN_BRACE entryList CLOSE_BRACE							   	{ $$ = ObjectSemanticAction($2); }
+	;
+
+entryList: entry														{ $$ = entryListSemanticAction($1, )}
+	| entryList[entryList] COMMA entry[singleEntry]					  	{ $$ = entryListSemanticAction($entryList, $singleEntry)}
+	;
+
+entry: %empty															{ $$ = emptyEntryAction() }
+	;
 %%

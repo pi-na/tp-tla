@@ -85,3 +85,31 @@ Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Express
 	}
 	return program;
 }
+
+Object * ObjectSemanticAction(Expression * entries) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Object * object = calloc(1, sizeof(Object));
+	object->entries = entries;
+	return object;
+}
+
+Expression * singleEntrySemanticAction(Expression * entry) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return entry;
+}
+
+Expression * entryListSemanticAction(Expression * entries, Expression * singleEntry) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Expression * expression = calloc(1, sizeof(Expression));
+	expression->leftExpression = entries;
+	expression->rightExpression = singleEntry;
+	expression->type = ENTRY_LIST;
+	return expression;
+}
+
+Expression * emptyEntryAction(void) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Expression * expression = calloc(1, sizeof(Expression));
+	expression->type = EMPTY_ENTRY;
+	return expression;
+}

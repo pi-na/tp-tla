@@ -16,11 +16,15 @@ void shutdownAbstractSyntaxTreeModule();
 
 typedef enum ExpressionType ExpressionType;
 typedef enum FactorType FactorType;
-
+typedef enum EntryListType EntryListType;
 typedef struct Constant Constant;
 typedef struct Expression Expression;
 typedef struct Factor Factor;
 typedef struct Program Program;
+
+typedef struct Object Object;
+typedef struct EntryList EntryList;
+typedef struct Entry Entry;
 
 /**
  * Node types for the Abstract Syntax Tree (AST).
@@ -37,6 +41,11 @@ enum ExpressionType {
 enum FactorType {
 	CONSTANT,
 	EXPRESSION
+};
+
+enum EntryListType {
+	ENTRY,
+	ENTRY_LIST
 };
 
 struct Constant {
@@ -64,6 +73,22 @@ struct Expression {
 
 struct Program {
 	Expression * expression;
+};
+
+struct Object {
+	EntryList * entries;
+};
+
+struct EntryList {
+	union {
+		Entry * entry;
+		Entry ** entry_list;
+	};
+	EntryListType type;
+};
+
+struct Entry {
+	/** TODO */
 };
 
 /**
