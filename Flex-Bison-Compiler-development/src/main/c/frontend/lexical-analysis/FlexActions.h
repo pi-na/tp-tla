@@ -22,24 +22,43 @@ void shutdownFlexActionsModule();
  * Flex lexeme processing actions.
  */
 
-/* Acciones para comentarios */
+// Comentarios
 void BeginMultilineCommentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 void EndMultilineCommentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 void IgnoredLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
+// Cadenas
+void BeginStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+void EndStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+void StringContentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+void EscapedCharacterStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+void UnicodeCharacterStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+void InvalidStringEscapeLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+
+// Símbolos
 Token ParenthesisLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
+Token BraceLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
+Token BracketLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
+Token ColonLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 Token CommaLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+Token SemiLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
-/* Acciones para palabras clave */
+// Literales
+Token BooleanLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
+Token NullLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+Token IntegerLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+Token FloatLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+
+// Palabras clave
 Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-Token HTMLTagLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 
-/* Acciones para identificadores */
+// Operadores
+Token OperatorLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
+
+// Identificadores
 Token IdentifierLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
-/* Acción para tokens desconocidos */
+// Error
 Token UnknownLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-
-Token BraceLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 
 #endif

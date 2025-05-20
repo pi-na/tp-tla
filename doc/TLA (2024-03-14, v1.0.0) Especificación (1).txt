@@ -1,0 +1,293 @@
+﻿Especificación
+	
+
+	
+
+  
+
+Especificación
+Diseño e Implementación de un Lenguaje
+v1.0.0
+
+
+1. Equipo        1
+2. Repositorio        1
+3. Dominio        2
+4. Construcciones        2
+5. Casos de Prueba        3
+6. Ejemplos        3
+
+
+1. Equipo
+
+
+Nombre
+	Apellido
+	Legajo
+	E-mail
+	Juan Diego
+	Gago
+	64137
+	jgago@itba.edu.ar
+	Octavio
+	Zacagnino
+	64255
+	ozacagnino@itba.edu.ar
+	Tomas
+	Pinausig
+	63167
+	tpinausigcastillo@itba.edu.ar
+	Javier
+	Peral
+	62108
+	jperalbelmont@itba.edu.ar
+	
+
+2. Repositorio
+
+
+https://github.com/pi-na/tp-tla
+3. Dominio
+El objetivo de este proyecto es desarrollar un lenguaje y sistema que permita generar páginas web en HTML a partir de archivos JSON estructurados. El lenguaje JSON actuará como una representación de alto nivel de la estructura y contenido de la página web, permitiendo al usuario definir elementos como títulos, subtítulos, secciones, navegación y estilos básicos sin necesidad de escribir directamente código HTML.
+El sistema interpretará estos archivos JSON y generará automáticamente código HTML válido y semánticamente correcto, que podrá ser visualizado en cualquier navegador moderno. Esto permitirá a diseñadores, programadores principiantes o sistemas automatizados construir páginas web de forma rápida, segura y legible.
+Para reducir la complejidad del proyecto, el lenguaje JSON utilizará una estructura jerárquica con un conjunto limitado de etiquetas HTML representadas mediante el atributo type. Cada elemento podrá contener atributos adicionales como content (para anidar contenido), src, entre otros. No se incluirá soporte para CSS externo, JavaScript, ni atributos avanzados. El sistema solo procesará etiquetas HTML básicas como html, head, title, body, p, a, img, b, i, br, hr, center, y podrá ser extendido en futuras versiones. Cada objeto JSON deberá respetar una estructura estricta para garantizar una conversión válida y predecible a HTML.
+
+
+4. Construcciones
+
+
+El lenguaje JSON-HTML está diseñado para transformar una estructura JSON predefinida en un documento HTML completamente funcional. Para ello, se definen las siguientes construcciones, prestaciones y funcionalidades:
+
+
+1. Estructura Básica del Documento:
+* El documento de entrada deberá iniciarse con un objeto JSON que contenga la clave "type" con el valor "html", estableciendo la raíz de la estructura HTML.
+
+* Se deberán definir, al menos, los elementos head y body como partes fundamentales del documento.
+
+* La estructura podrá anidar otros elementos hasta un máximo de 4 niveles de profundidad.
+
+
+   2. Definición de elementos HTML y atributos:
+   * Los elementos HTML se especificarán mediante la clave "type", permitiendo la creación de elementos estándar (e.g., div, p, h1, img, a, etc.) y elementos personalizados.
+
+   * Se podrán asignar atributos a cada elemento (por ejemplo, style, class, id, src, href) para definir propiedades visuales y de comportamiento.
+
+   * Los elementos podrán contener texto o a otros elementos, utilizando la clave "content", pudiendo mezclarse contenido literal con objetos JSON que representen subelementos.
+
+
+      3. Estructuras de control y Dinámicas:
+      * Se implementarán estructuras condicionales del tipo IF-THEN-ELSE para incluir o excluir elementos HTML según condiciones definidas en el JSON.
+
+      * Se proveerán mecanismos iterativos, como FOR o WHILE, para generar de forma dinámica conjuntos de elementos (por ejemplo, listas o tablas) a partir de datos suministrados.
+
+      * Se admitirán expresiones aritméticas y lógicas que permitan calcular valores para atributos o determinar la estructura del documento.
+
+
+         4. Parámetros y Variables:
+         * Se posibilitará la definición y uso de variables dentro del documento JSON para reutilizar valores (como colores, textos o direcciones) en distintas partes del HTML.
+
+         * El lenguaje permitirá incorporar parámetros de entrada, ya sea mediante argumentos del programa, para personalizar el contenido generado.
+
+
+            5. Validación y Restricciones del Lenguaje:
+            * Obligatoriedad de la clave "type": Cada elemento debe incluir la clave "type" para identificar el tipo de etiqueta HTML a generar. La clave type debe aparecer como primer clave del elemento.
+
+            * Unicidad de claves críticas: No se permitirán duplicados de la clave "content" en un mismo objeto, a fin de evitar ambigüedades en la interpretación.
+
+            * Operadores y expresiones: Se deberán utilizar únicamente operadores y funciones definidos en el lenguaje; se rechazará cualquier operador o expresión que no esté explícitamente contemplado.
+
+            * Objetos JSON vacíos: Se rechazará el uso de objetos vacíos, ya que pueden comprometer la correcta transformación a HTML.
+
+            * Referencias a variables: Todas las variables referenciadas deberán haber sido definidas previamente; de lo contrario, el programa será rechazado.
+
+
+               6. Transformación y Generación de Salida:
+               * El compilador se encargará de transformar el documento JSON en un código HTML válido, respetando la estructura y los atributos definidos en el mismo.
+
+               * Se garantizará la integración de estilos embebidos (CSS) y la generación de estructuras interactivas según lo definido en el JSON.
+
+
+
+
+                  5. Casos de Prueba
+
+
+Se proponen los siguientes casos iniciales (luego serán más) de prueba de aceptación:
+
+
+                  1. Un programa que genere una página HTML con un title y un párrafo simple.
+
+                  2. Un programa que genere una página HTML con una imagen centrada y un fondo de color personalizado en el body.
+
+                  3. Un programa que incluya un enlace (<a>) dentro de un párrafo.
+
+                  4. Un programa que genere una estructura anidada de texto con negrita (<b>) e itálica (<i>).
+
+                  5. Un programa que utilice una separación visual (<hr>) seguida de múltiples líneas de texto con saltos de línea (<br>).
+
+                  6. Un programa que combine distintos elementos como título, imagen, enlace y texto enriquecido dentro de un mismo documento.
+
+                  7. Un programa que incluya elementos propios como page-denter para un div centrado que no admita estar dentro de otro div y se asegure de que se procesen correctamente.
+
+                  8. Un programa que genere múltiples secciones dentro del body (simulando contenedores como divs) con contenido variado.
+
+                  9. Crear un HTML utilizando 1 variable provista por el usuario en tiempo de compilación
+
+
+                     10. Un programa con un vínculo a un sitio externo usando la directiva “ext-ref”
+
+
+Además, los siguientes casos de prueba de rechazo:
+
+
+                     1. JSON malformado sintácticamente.
+
+                     2. Falta del atributo obligatorio type.
+
+                     3. Tipo de elemento no soportado, ej { "type": "video", "content": "" }
+
+                     4. Contenido con tipo de dato incompatible.
+
+                     5. Referencia a una variable no definida en el contexto.
+
+
+
+
+                        6. Ejemplos
+
+
+Ejemplo de pasar de un JSON a un HTML básico donde está como debería verse el HTML resultante.
+
+
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "head",
+      "content": {
+        "type": "title",
+        "content": "Imagen centrada"
+      }
+    },
+    {
+      "type": "body",
+      “style”: {
+         “background-color”: "#e0f7fa"
+       },
+      "content": {
+        "type": "center",
+        "content": {
+          "type": "img",
+          "src": "imagen.jpg",
+          "alt": "Descripción de la imagen",
+          "content": ""
+        }
+      }
+    }
+  ]
+}
+
+
+	
+
+
+
+Html: 
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Imagen centrada</title>
+  </head>
+  <body bgcolor="#e0f7fa">
+    <center>
+      <img src="imagen.jpg" alt="Descripción de la imagen">
+    </center>
+  </body>
+</html>
+
+
+	
+
+
+
+
+
+
+
+
+
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "head",
+      "content": {
+        "type": "title",
+        "content": "Bienvenidos a Mi Sitio"
+      }
+    },
+    {
+      "type": "body",
+      “style”: {
+           “Background-color”: “#333”
+      },
+      "color": "#333",
+      "content": [
+        {
+          "type": "h1",
+          "content": {
+            "var": "userName"
+          }
+        },
+        {
+          "type": "p",
+          "content": "Este es un párrafo generado desde JSON"
+        }
+      ]
+    }
+  ]
+}
+
+
+	
+
+En tiempo de compilacion se debe agregar el userName por entrada estandar
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bienvenidos a Mi Sitio</title>
+  </head>
+  <body BGCOLOR="#f0f0f0" style="color: #333;">
+    <h1>Juan Diego</h1>
+    <p>Este es un párrafo generado desde JSON, con un poco más de onda. 🎉</p>
+  </body>
+</html>
+
+
+	
+
+
+
+
+
+Cambios realizados:
+                        1. Eliminación del uso de @ en claves especiales
+Decidimos eliminar el prefijo @ en todas las claves de control del lenguaje (@type, @content, etc.). Ahora usamos claves normales (type, content, etc.) y procesamos todo el input a través del parser, sin permitir inserciones de HTML raw.
+> Esto responde a tu comentario sobre evitar inconsistencias como en BGCOLOR, y nos pareció mejor tener una estructura homogénea que el compilador interprete completamente.
+                        2. Restricción: no se admite entrada por stdin
+Ya no permitimos el uso de entrada estándar como mecanismo de paso de parámetros dinámicos. Toda la información pertinente a variables dinámicas debe estar incluida como argumentos del programa.
+> Esto responde a tu observación sobre la ambigüedad que puede surgir al interpretar secuencias de bytes sin formato definido.
+                        3. Rediseño del manejo de estilos con la clave style
+Incorporamos una nueva clave "style", que acepta un objeto con propiedades visuales predefinidas por nosotros (por ejemplo: { "backgroundColor": "#f0f0f0", "textAlign": "center" }). No se permiten strings de CSS ni estilos personalizados arbitrarios.
+> Esto surge tanto de tu observación sobre evitar BGCOLOR, como de nuestra intención de controlar el conjunto de propiedades permitidas y evitar código inconsistente.
+                        4. Requerimiento de que type sea la primera clave de cada objeto
+Establecimos como regla que todos los elementos deben comenzar con la clave type, para que la lectura jerárquica del documento sea clara y homogénea desde el parser.
+> Esto es parte de una simplificación que nos ayuda a estructurar el compilador de manera más determinista.
+                        5. Nuevas directivas: ref y ext-ref
+Agregamos dos nuevas claves para enlaces:
+                           * ref: para vincular a otros elementos dentro de la misma página (validando que la referencia exista, partiendo de la propiedad "id" declarada en algun otro elemento).
+                           * ext-ref: para enlaces externos, que no requieren validación de destino.
+> Este cambio responde directamente a tu sugerencia de incluir links internos y su validación durante la compilación.
+
+
+⟨⟩
