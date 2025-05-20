@@ -64,9 +64,10 @@ program: object													{ $$ = ObjectProgramSemanticAction(currentCompilerSt
 object: OPEN_BRACE entryList CLOSE_BRACE							   	{ $$ = ObjectSemanticAction($2); }
 	;
 
-entryList: entry														{ $$ = singleEntryListSemanticAction($1, ENTRY); }
-	| entryList[entryList] COMMA entry[singleEntry]					  	{ $$ = entryListSemanticAction($entryList, $singleEntry); }
+entryList: entry												{ $$ = singleEntryListSemanticAction($1); }
+    | entryList COMMA entry										{ $$ = entryListSemanticAction($1, $3); }
 	;
+
 
 entry: %empty															{ $$ = emptyEntryAction(); }
 	;
