@@ -1,0 +1,7 @@
+{
+  "type": "html",
+  "content": {
+    "type": "p",
+    "content": {"var": "variableNoDefinida"}
+  }
+} 

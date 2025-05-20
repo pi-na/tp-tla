@@ -1,0 +1,19 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "body",
+      "style": {
+        "background-color": "#f0f0f0",
+        "font-family": "Arial, sans-serif",
+        "margin": "0",
+        "padding": "20px",
+        "color": "#333"
+      },
+      "content": {
+        "type": "p",
+        "content": "Texto con estilos"
+      }
+    }
+  ]
+} 
