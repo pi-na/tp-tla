@@ -1,0 +1,19 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "head",
+      "content": {
+        "type": "title",
+        "content": {"var": "pageTitle"}
+      }
+    },
+    {
+      "type": "body",
+      "content": {
+        "type": "h1",
+        "content": {"var": "userName"}
+      }
+    }
+  ]
+} 

@@ -1,0 +1,14 @@
+{
+  "content": [
+    {
+      "type": "head",
+      "content": {
+        "type": "title",
+        "content": "Título"
+      }
+    },
+    {
+      "content": "Contenido sin tipo"
+    }
+  ]
+} 

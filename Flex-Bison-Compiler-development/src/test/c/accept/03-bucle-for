@@ -1,0 +1,20 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "body",
+      "content": {
+        "type": "ul",
+        "loop": {
+          "init": {"variable": "i", "value": 0},
+          "condition": {"op": "<", "left": "i", "right": 3},
+          "increment": {"variable": "i", "op": "+", "value": 1},
+          "body": {
+            "type": "li",
+            "content": "Elemento de lista"
+          }
+        }
+      }
+    }
+  ]
+} 

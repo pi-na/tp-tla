@@ -1,0 +1,10 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "a",
+      "ref": "seccion1",
+      "content": "Enlace a sección inexistente"
+    }
+  ]
+} 

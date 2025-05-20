@@ -1,0 +1,12 @@
+{
+  "type": "html",
+  "content": {
+    "type": "div",
+    "conditional": {
+      "then": {
+        "type": "p",
+        "content": "Error en condicional - falta la condición"
+      }
+    }
+  }
+} 

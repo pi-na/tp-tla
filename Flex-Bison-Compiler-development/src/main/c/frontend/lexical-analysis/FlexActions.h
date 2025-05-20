@@ -27,23 +27,8 @@ void BeginMultilineCommentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerC
 void EndMultilineCommentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 void IgnoredLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
-/* Acciones para valores literales */
-Token StringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-Token NumberLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-Token BooleanLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-Token NullLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-
-/* Acciones para operadores */
-Token ArithmeticOperatorLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-Token ComparisonOperatorLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-Token LogicalOperatorLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-
-/* Acciones para delimitadores */
 Token ParenthesisLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-Token BraceLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-Token BracketLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 Token CommaLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-Token ColonLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 /* Acciones para palabras clave */
 Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
@@ -54,5 +39,7 @@ Token IdentifierLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 /* Acción para tokens desconocidos */
 Token UnknownLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+
+Token BraceLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 
 #endif
