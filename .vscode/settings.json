@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "bisonactions.h": "c"
+        "bisonactions.h": "c",
+        "calculator.h": "c"
     }
 }
