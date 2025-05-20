@@ -31,50 +31,10 @@ static void _logSyntacticAnalyzerAction(const char * functionName) {
 
 /* PUBLIC FUNCTIONS */
 
-Constant * IntegerConstantSemanticAction(const int value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Constant * constant = calloc(1, sizeof(Constant));
-	constant->value = value;
-	return constant;
-}
-
-Expression * ArithmeticExpressionSemanticAction(Expression * leftExpression, Expression * rightExpression, ExpressionType type) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expression = calloc(1, sizeof(Expression));
-	expression->leftExpression = leftExpression;
-	expression->rightExpression = rightExpression;
-	expression->type = type;
-	return expression;
-}
-
-Expression * FactorExpressionSemanticAction(Factor * factor) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expression = calloc(1, sizeof(Expression));
-	expression->factor = factor;
-	expression->type = FACTOR;
-	return expression;
-}
-
-Factor * ConstantFactorSemanticAction(Constant * constant) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Factor * factor = calloc(1, sizeof(Factor));
-	factor->constant = constant;
-	factor->type = CONSTANT;
-	return factor;
-}
-
-Factor * ExpressionFactorSemanticAction(Expression * expression) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Factor * factor = calloc(1, sizeof(Factor));
-	factor->expression = expression;
-	factor->type = EXPRESSION;
-	return factor;
-}
-
-Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Expression * expression) {
+Program * ObjectProgramSemanticAction(CompilerState * compilerState, Object * object) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Program * program = calloc(1, sizeof(Program));
-	program->expression = expression;
+	program->object = object;
 	compilerState->abstractSyntaxtTree = program;
 	if (0 < flexCurrentContext()) {
 		logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
@@ -86,30 +46,34 @@ Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Express
 	return program;
 }
 
-Object * ObjectSemanticAction(Expression * entries) {
+Object * ObjectSemanticAction(EntryList * entries) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Object * object = calloc(1, sizeof(Object));
 	object->entries = entries;
 	return object;
 }
 
-Expression * singleEntrySemanticAction(Expression * entry) {
+EntryList * entryListSemanticAction(EntryList * entryList, Entry * newEntry) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	while(entryList->next != NULL) {
+		entryList = entryList->next;
+	}
+	entryList->next = singleEntryListSemanticAction(newEntry);
+	return entryList;
+}
+
+EntryList * singleEntryListSemanticAction(Entry * entry) {
+	EntryList * newEntryList = calloc(1, sizeof(EntryList));
+	newEntryList->entry = entry;
+	newEntryList->next = NULL;
+	return newEntryList;
+}
+
+Entry * emptyEntryAction() {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Entry * entry = calloc(1, sizeof(Entry));
+	// No hay campos para inicializar en Entry ya que está vacío
 	return entry;
 }
 
-Expression * entryListSemanticAction(Expression * entries, Expression * singleEntry) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expression = calloc(1, sizeof(Expression));
-	expression->leftExpression = entries;
-	expression->rightExpression = singleEntry;
-	expression->type = ENTRY_LIST;
-	return expression;
-}
 
-Expression * emptyEntryAction(void) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expression = calloc(1, sizeof(Expression));
-	expression->type = EMPTY_ENTRY;
-	return expression;
-}

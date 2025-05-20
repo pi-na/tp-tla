@@ -14,14 +14,7 @@ void shutdownAbstractSyntaxTreeModule();
  * This typedefs allows self-referencing types.
  */
 
-typedef enum ExpressionType ExpressionType;
-typedef enum FactorType FactorType;
-typedef enum EntryListType EntryListType;
-typedef struct Constant Constant;
-typedef struct Expression Expression;
-typedef struct Factor Factor;
 typedef struct Program Program;
-
 typedef struct Object Object;
 typedef struct EntryList EntryList;
 typedef struct Entry Entry;
@@ -30,49 +23,8 @@ typedef struct Entry Entry;
  * Node types for the Abstract Syntax Tree (AST).
  */
 
-enum ExpressionType {
-	ADDITION,
-	DIVISION,
-	FACTOR,
-	MULTIPLICATION,
-	SUBTRACTION
-};
-
-enum FactorType {
-	CONSTANT,
-	EXPRESSION
-};
-
-enum EntryListType {
-	ENTRY,
-	ENTRY_LIST
-};
-
-struct Constant {
-	int value;
-};
-
-struct Factor {
-	union {
-		Constant * constant;
-		Expression * expression;
-	};
-	FactorType type;
-};
-
-struct Expression {
-	union {
-		Factor * factor;
-		struct {
-			Expression * leftExpression;
-			Expression * rightExpression;
-		};
-	};
-	ExpressionType type;
-};
-
 struct Program {
-	Expression * expression;
+	Object * object;
 };
 
 struct Object {
@@ -80,11 +32,8 @@ struct Object {
 };
 
 struct EntryList {
-	union {
-		Entry * entry;
-		Entry ** entry_list;
-	};
-	EntryListType type;
+	Entry * entry;
+	EntryList * next;
 };
 
 struct Entry {
@@ -94,9 +43,9 @@ struct Entry {
 /**
  * Node recursive destructors.
  */
-void releaseConstant(Constant * constant);
-void releaseExpression(Expression * expression);
-void releaseFactor(Factor * factor);
 void releaseProgram(Program * program);
+void releaseObject(Object * object);
+void releaseEntryList(EntryList * entryList);
+void releaseEntry(Entry * entry);
 
 #endif
