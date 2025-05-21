@@ -21,6 +21,8 @@
 	Program * program;
 	Object * object;
 	
+	/** Sacamos el EntryList!!!!!. */
+
 	// Nuevos nodos del AST
 	ValueList * valueList;
 	Value * value;

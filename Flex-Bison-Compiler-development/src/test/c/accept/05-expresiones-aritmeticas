@@ -9,7 +9,10 @@
           "width": {"op": "+", "left": 100, "right": 50},
           "height": {"op": "*", "left": 200, "right": 2}
         },
-        "content": "Div con cálculos"
+        "content": {
+          "type": "p",
+          "content": "Div con cálculos"
+        }
       }
     }
   ]
