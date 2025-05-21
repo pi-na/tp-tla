@@ -7,7 +7,10 @@
         {
           "type": "div",
           "id": "seccion1",
-          "content": "Primera sección"
+          "content": {
+            "type": "p",
+            "content": "Primera sección"
+          }
         },
         {
           "type": "a",
