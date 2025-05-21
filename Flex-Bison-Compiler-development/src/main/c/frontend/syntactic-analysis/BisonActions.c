@@ -11,12 +11,20 @@ static CompilerState * _currentState = NULL;  // Para mantener el estado actual
 static struct {
 	char* name;
 	boolean isDefined;
+	boolean isBeingResolved;
+	ValueType type;
+	union {
+		int intValue;
+		double floatValue;
+		char* stringValue;
+		boolean booleanValue;
+	} value;
 } variables[MAX_VARIABLES];
 static int variableCount = 0;
 
 // Lista de elementos HTML válidos
 static const char* validElements[] = {
-	"html", "head", "body", "title", "p", "div", "span", "a", "img", "ul", "ol", "li", NULL
+	"html", "head", "body", "title", "p", "div", "span", "a", "img", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "h6", NULL
 };
 
 // Funciones de validación
@@ -58,6 +66,7 @@ static void defineVariable(const char* name) {
 	if (variableCount < MAX_VARIABLES) {
 		variables[variableCount].name = strdup(name);
 		variables[variableCount].isDefined = true;
+		variables[variableCount].isBeingResolved = false;
 		variableCount++;
 	}
 }
@@ -69,6 +78,24 @@ static boolean isVariableDefined(const char* name) {
 		}
 	}
 	return false;
+}
+
+static boolean isVariableBeingResolved(const char* name) {
+	for (int i = 0; i < variableCount; i++) {
+		if (strcmp(variables[i].name, name) == 0) {
+			return variables[i].isBeingResolved;
+		}
+	}
+	return false;
+}
+
+static void setVariableResolutionStatus(const char* name, boolean status) {
+	for (int i = 0; i < variableCount; i++) {
+		if (strcmp(variables[i].name, name) == 0) {
+			variables[i].isBeingResolved = status;
+			return;
+		}
+	}
 }
 
 static void clearVariables() {
@@ -148,6 +175,134 @@ Program * ObjectProgramSemanticAction(CompilerState * compilerState, Object * ob
 	return program;
 }
 
+// Función para validar compatibilidad de contenido
+static boolean isContentCompatible(const char* elementType, Value* content) {
+	if (content == NULL) return true;  // Contenido vacío es válido
+
+	// Elementos que solo aceptan texto o referencias a variables
+	const char* textOnlyElements[] = {"title", "p", "span", "h1", NULL};
+	boolean isTextOnly = false;
+	
+	for (int i = 0; textOnlyElements[i] != NULL; i++) {
+		if (strcmp(elementType, textOnlyElements[i]) == 0) {
+			isTextOnly = true;
+			break;
+		}
+	}
+
+	if (isTextOnly) {
+		// Permitir string, referencia a variable, u objeto que representa una referencia a variable
+		if (content->type == STRING_VALUE || content->type == VAR_REF_VALUE) {
+			return true;
+		}
+		
+		// Verificar si es un objeto que representa una referencia a variable
+		if (content->type == OBJECT_VALUE) {
+			Object* obj = content->data.objectValue;
+			if (obj != NULL && obj->pairs != NULL && obj->pairs->pair != NULL &&
+				strcmp(obj->pairs->pair->key, "var") == 0 && 
+				obj->pairs->pair->value != NULL &&
+				obj->pairs->pair->value->type == STRING_VALUE) {
+				return true;
+			}
+		}
+		
+		logError(_logger, "Element '%s' can only contain text content or variable references", elementType);
+		return false;
+	}
+
+	// Elementos que solo aceptan otros elementos
+	const char* containerElements[] = {"html", "head", "body", "div", "ul", "ol", NULL};
+	boolean isContainer = false;
+	
+	for (int i = 0; containerElements[i] != NULL; i++) {
+		if (strcmp(elementType, containerElements[i]) == 0) {
+			isContainer = true;
+			break;
+		}
+	}
+
+	if (isContainer && content->type == STRING_VALUE) {
+		logError(_logger, "Element '%s' cannot contain direct text content", elementType);
+		return false;
+	}
+
+	return true;
+}
+
+// Función auxiliar para verificar si un objeto es una referencia a variable
+static boolean isVarRefObject(Object* object) {
+	if (object == NULL || object->pairs == NULL || object->pairs->pair == NULL) {
+		return false;
+	}
+	return strcmp(object->pairs->pair->key, "var") == 0;
+}
+
+// Modificar la función validateHtmlObject para incluir la validación de contenido
+static boolean validateHtmlObject(Object* object) {
+	if (object == NULL || object->pairs == NULL) return false;
+
+	// Si es un objeto que representa una referencia a variable, no necesita validación HTML
+	if (isVarRefObject(object)) {
+		return true;
+	}
+
+	// Verificar que tenga un campo "type" válido
+	PairList* pairs = object->pairs;
+	boolean hasType = false;
+	boolean hasValidType = false;
+	const char* elementType = NULL;
+	Value* contentValue = NULL;
+
+	while (pairs != NULL) {
+		if (strcmp(pairs->pair->key, "type") == 0) {
+			hasType = true;
+			if (pairs->pair->value->type == STRING_VALUE) {
+				elementType = pairs->pair->value->data.stringValue;
+				hasValidType = isValidElement(elementType);
+				if (!hasValidType) {
+					logError(_logger, "Invalid HTML element type: %s", elementType);
+					return false;
+				}
+			}
+		} else if (strcmp(pairs->pair->key, "content") == 0) {
+			contentValue = pairs->pair->value;
+		}
+		pairs = pairs->next;
+	}
+
+	if (!hasType || !hasValidType) {
+		logError(_logger, "Missing or invalid 'type' field in HTML element");
+		return false;
+	}
+
+	// Validar compatibilidad de contenido
+	if (!isContentCompatible(elementType, contentValue)) {
+		return false;
+	}
+
+	// Validar recursivamente el contenido
+	if (contentValue != NULL) {
+		if (contentValue->type == OBJECT_VALUE) {
+			if (!validateHtmlObject(contentValue->data.objectValue)) {
+				return false;
+			}
+		} else if (contentValue->type == ARRAY_VALUE) {
+			ValueList* values = contentValue->data.arrayValue->values;
+			while (values != NULL) {
+				if (values->value->type == OBJECT_VALUE) {
+					if (!validateHtmlObject(values->value->data.objectValue)) {
+						return false;
+					}
+				}
+				values = values->next;
+			}
+		}
+	}
+
+	return true;
+}
+
 Object * ObjectSemanticAction(PairList * pairs) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	
@@ -160,6 +315,15 @@ Object * ObjectSemanticAction(PairList * pairs) {
 	
 	Object * object = calloc(1, sizeof(Object));
 	object->pairs = pairs;
+
+	// Validar la estructura HTML si este objeto es un elemento HTML
+	if (isFirstPairType(pairs)) {
+		if (!validateHtmlObject(object)) {
+			_currentState->succeed = false;
+			return NULL;
+		}
+	}
+	
 	return object;
 }
 
@@ -354,14 +518,26 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 Conditional * ConditionalSemanticAction(Expression * condition, Object * thenBranch, Object * elseBranch) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	
-	// Validar que la condición sea una expresión booleana
+	// Validar que la condición sea una expresión booleana o una expresión que devuelva booleano
 	if (condition == NULL || 
 		(condition->type != BOOLEAN_EXPR && 
 		 condition->type != BINARY_EXPR && 
-		 condition->type != UNARY_EXPR)) {
+		 condition->type != UNARY_EXPR &&
+		 condition->type != VAR_REF_EXPR)) {
 		logError(_logger, "Invalid condition in if statement - must be a boolean expression");
 		_currentState->succeed = false;
 		return NULL;
+	}
+	
+	// Si es una expresión binaria, validar que sea una comparación o expresión lógica
+	if (condition->type == BINARY_EXPR) {
+		OperatorType op = condition->data.binaryExpr.op;
+		if (op != AND_OP && op != OR_OP && op != EQUALS_OP && op != NOT_EQUALS_OP && 
+			op != GREATER_THAN_OP && op != LESS_THAN_OP && op != GREATER_EQUAL_OP && op != LESS_EQUAL_OP) {
+			logError(_logger, "Binary expression in condition must be a comparison or logical operation");
+			_currentState->succeed = false;
+			return NULL;
+		}
 	}
 	
 	// Validar que las ramas tengan la estructura correcta
@@ -420,12 +596,43 @@ Conditional * ObjectConditionalSemanticAction(Object * condObject) {
 Loop * LoopSemanticAction(Expression * initialization, Expression * condition, Expression * increment, Object * body) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	
-	// Validar que la condición sea una expresión booleana
+	// Validar la inicialización si existe
+	if (initialization != NULL && 
+		initialization->type != INTEGER_EXPR && 
+		initialization->type != VAR_REF_EXPR) {
+		logError(_logger, "Loop initialization must be an integer or variable reference");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
+	// Validar que la condición sea una expresión booleana o comparación
 	if (condition == NULL || 
 		(condition->type != BOOLEAN_EXPR && 
 		 condition->type != BINARY_EXPR && 
-		 condition->type != UNARY_EXPR)) {
+		 condition->type != VAR_REF_EXPR)) {
 		logError(_logger, "Invalid condition in for loop - must be a boolean expression");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
+	// Si es una expresión binaria, validar que sea una comparación
+	if (condition->type == BINARY_EXPR) {
+		OperatorType op = condition->data.binaryExpr.op;
+		if (op != EQUALS_OP && op != NOT_EQUALS_OP &&
+			op != GREATER_THAN_OP && op != LESS_THAN_OP && 
+			op != GREATER_EQUAL_OP && op != LESS_EQUAL_OP) {
+			logError(_logger, "Loop condition must be a comparison");
+			_currentState->succeed = false;
+			return NULL;
+		}
+	}
+	
+	// Validar el incremento si existe
+	if (increment != NULL && 
+		increment->type != INTEGER_EXPR && 
+		increment->type != BINARY_EXPR &&
+		increment->type != VAR_REF_EXPR) {
+		logError(_logger, "Loop increment must be an integer, arithmetic operation, or variable reference");
 		_currentState->succeed = false;
 		return NULL;
 	}
@@ -445,18 +652,38 @@ Loop * LoopSemanticAction(Expression * initialization, Expression * condition, E
 	return loop;
 }
 
+static boolean validateVariableRef(const char* name) {
+	if (name == NULL) return false;
+	
+	// Verificar si la variable está siendo resuelta (referencia circular)
+	for (int i = 0; i < variableCount; i++) {
+		if (strcmp(variables[i].name, name) == 0) {
+			if (variables[i].isBeingResolved) {
+				logError(_logger, "Circular reference detected for variable '%s'", name);
+				return false;
+			}
+			return true;
+		}
+	}
+	
+	logError(_logger, "Variable '%s' is not defined", name);
+	return false;
+}
+
 VarRef * VariableRefSemanticAction(char * name) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	
-	// Validar que la variable esté definida
-	if (!isVariableDefined(name)) {
-		logError(_logger, "Variable '%s' is not defined", name);
+	if (!validateVariableRef(name)) {
 		_currentState->succeed = false;
 		return NULL;
 	}
 	
 	VarRef * varRef = calloc(1, sizeof(VarRef));
 	varRef->name = name;
+	
+	// Marcar la variable como en proceso de resolución
+	setVariableResolutionStatus(name, true);
+	
 	return varRef;
 }
 
@@ -502,6 +729,23 @@ Expression * VariableRefExpressionSemanticAction(VarRef * varRef) {
 
 Expression * BinaryExpressionSemanticAction(OperatorType op, Expression * left, Expression * right) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	
+	// Validar que los operandos sean del tipo correcto según el operador
+	if (op == ADD_OP || op == SUB_OP || op == MUL_OP || op == DIV_OP) {
+		if ((left->type != INTEGER_EXPR && left->type != FLOAT_EXPR) ||
+			(right->type != INTEGER_EXPR && right->type != FLOAT_EXPR)) {
+			logError(_logger, "Arithmetic operators require numeric operands");
+			_currentState->succeed = false;
+			return NULL;
+		}
+	} else if (op == AND_OP || op == OR_OP) {
+		if (left->type != BOOLEAN_EXPR || right->type != BOOLEAN_EXPR) {
+			logError(_logger, "Logical operators require boolean operands");
+			_currentState->succeed = false;
+			return NULL;
+		}
+	}
+	
 	Expression * expr = calloc(1, sizeof(Expression));
 	expr->type = BINARY_EXPR;
 	expr->data.binaryExpr.op = op;

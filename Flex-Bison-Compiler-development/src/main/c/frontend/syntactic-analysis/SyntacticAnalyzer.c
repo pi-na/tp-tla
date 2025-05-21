@@ -41,6 +41,7 @@ extern int yyparse(void);
 void yyerror(const char * string) {
 	LexicalAnalyzerContext * lexicalAnalyzerContext = createLexicalAnalyzerContext();
 	logError(_logger, "Syntax error (on line %d): %s", lexicalAnalyzerContext->line, string);
+	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 }
 
 /* PUBLIC FUNCTIONS */
@@ -68,9 +69,8 @@ SyntacticAnalysisStatus parse(CompilerState * compilerState) {
 			if (compilerState->succeed == true) {
 				return ACCEPT;
 			}
-			else {
-				syntacticAnalysisStatus = REJECT;
-			}
+			syntacticAnalysisStatus = REJECT;
+			break;
 		case 1:
 			syntacticAnalysisStatus = REJECT;
 			break;
