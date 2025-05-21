@@ -180,7 +180,7 @@ static boolean isContentCompatible(const char* elementType, Value* content) {
 	if (content == NULL) return true;  // Contenido vacío es válido
 
 	// Elementos que solo aceptan texto o referencias a variables
-	const char* textOnlyElements[] = {"title", "p", "span", "h1", NULL};
+	const char* textOnlyElements[] = {"title", "p", "span", "h1", "div", NULL};
 	boolean isTextOnly = false;
 	
 	for (int i = 0; textOnlyElements[i] != NULL; i++) {
@@ -513,84 +513,6 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 	}
 	current->next = singleValueListSemanticAction(newValue);
 	return valueList;
-}
-
-Conditional * ConditionalSemanticAction(Expression * condition, Object * thenBranch, Object * elseBranch) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	// Validar que la condición sea una expresión booleana o una expresión que devuelva booleano
-	if (condition == NULL || 
-		(condition->type != BOOLEAN_EXPR && 
-		 condition->type != BINARY_EXPR && 
-		 condition->type != UNARY_EXPR &&
-		 condition->type != VAR_REF_EXPR)) {
-		logError(_logger, "Invalid condition in if statement - must be a boolean expression");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
-	// Si es una expresión binaria, validar que sea una comparación o expresión lógica
-	if (condition->type == BINARY_EXPR) {
-		OperatorType op = condition->data.binaryExpr.op;
-		if (op != AND_OP && op != OR_OP && op != EQUALS_OP && op != NOT_EQUALS_OP && 
-			op != GREATER_THAN_OP && op != LESS_THAN_OP && op != GREATER_EQUAL_OP && op != LESS_EQUAL_OP) {
-			logError(_logger, "Binary expression in condition must be a comparison or logical operation");
-			_currentState->succeed = false;
-			return NULL;
-		}
-	}
-	
-	// Validar que las ramas tengan la estructura correcta
-	if (thenBranch == NULL || !isFirstPairType(thenBranch->pairs)) {
-		logError(_logger, "Then branch must be a valid HTML element with 'type' as first field");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
-	if (elseBranch != NULL && !isFirstPairType(elseBranch->pairs)) {
-		logError(_logger, "Else branch must be a valid HTML element with 'type' as first field");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
-	Conditional * conditional = calloc(1, sizeof(Conditional));
-	conditional->condition = condition;
-	conditional->thenBranch = thenBranch;
-	conditional->elseBranch = elseBranch;
-	return conditional;
-}
-
-Conditional * ObjectConditionalSemanticAction(Object * condObject) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	Conditional * conditional = calloc(1, sizeof(Conditional));
-	
-	// Extract condition, then and else from the object
-	PairList * currentPair = condObject->pairs;
-	Object * thenObj = NULL;
-	Object * elseObj = NULL;
-	Expression * condExpr = NULL;
-	
-	while (currentPair != NULL) {
-		if (strcmp(currentPair->pair->key, "condition") == 0) {
-			// Convert value to expression
-			if (currentPair->pair->value->type == BOOLEAN_VALUE) {
-				condExpr = BooleanExpressionSemanticAction(currentPair->pair->value->data.booleanValue);
-			}
-			// Handle other types if needed
-		} else if (strcmp(currentPair->pair->key, "then") == 0 && currentPair->pair->value->type == OBJECT_VALUE) {
-			thenObj = currentPair->pair->value->data.objectValue;
-		} else if (strcmp(currentPair->pair->key, "else") == 0 && currentPair->pair->value->type == OBJECT_VALUE) {
-			elseObj = currentPair->pair->value->data.objectValue;
-		}
-		currentPair = currentPair->next;
-	}
-	
-	conditional->condition = condExpr;
-	conditional->thenBranch = thenObj;
-	conditional->elseBranch = elseObj;
-	
-	return conditional;
 }
 
 Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body) {
