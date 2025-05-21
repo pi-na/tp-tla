@@ -8,7 +8,6 @@
  */
 #include "../../frontend/syntactic-analysis/AbstractSyntaxTree.h"
 #include "../../shared/Logger.h"
-#include "../../shared/Type.h"
 #include <limits.h>
 
 /** Initialize module's internal state. */

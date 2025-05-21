@@ -48,7 +48,7 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue);
 
 Conditional * ConditionalSemanticAction(Expression * condition, Object * thenBranch, Object * elseBranch);
 Conditional * ObjectConditionalSemanticAction(Object * condObject);
-Loop * LoopSemanticAction(Expression * initialization, Expression * condition, Expression * increment, Object * body);
+Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body);
 VarRef * VariableRefSemanticAction(char * name);
 
 Expression * IntegerExpressionSemanticAction(int value);

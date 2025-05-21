@@ -1,0 +1,403 @@
+Nonterminals useless in grammar
+
+    element
+    attributeList
+    attribute
+
+
+Terminals unused in grammar
+
+    SEMI
+    FLOAT
+    UNKNOWN
+
+
+Rules useless in grammar
+
+   19 element: object
+
+   20 attributeList: %empty
+   21              | attribute
+   22              | attributeList COMMA attribute
+
+   23 attribute: STRING COLON value
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: object
+
+    2 object: OPEN_BRACE pairList CLOSE_BRACE
+
+    3 pairList: %empty
+    4         | pair
+    5         | pairList COMMA pair
+
+    6 pair: STRING COLON value
+
+    7 value: STRING
+    8      | JSON_NULL
+    9      | object
+   10      | array
+   11      | loop
+   12      | variableRef
+
+   13 array: OPEN_BRACKET valueList CLOSE_BRACKET
+
+   14 valueList: %empty
+   15          | value
+   16          | valueList COMMA value
+
+   17 loop: FOR OPEN_PARENTHESIS IDENTIFIER IN object CLOSE_PARENTHESIS object
+
+   18 variableRef: DOLLAR IDENTIFIER
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    CLOSE_PARENTHESIS <token> (258) 17
+    OPEN_PARENTHESIS <token> (259) 17
+    OPEN_BRACE <token> (260) 2
+    CLOSE_BRACE <token> (261) 2
+    OPEN_BRACKET <token> (262) 13
+    CLOSE_BRACKET <token> (263) 13
+    COMMA <token> (264) 5 16
+    COLON <token> (265) 6
+    SEMI <token> (266)
+    FOR <token> (267) 17
+    IN <token> (268) 17
+    STRING <string> (269) 6 7
+    IDENTIFIER <string> (270) 17 18
+    FLOAT <floating> (271)
+    JSON_NULL <token> (272) 8
+    DOLLAR <token> (273) 18
+    UNKNOWN <token> (274)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (20)
+        on left: 0
+    program <program> (21)
+        on left: 1
+        on right: 0
+    object <object> (22)
+        on left: 2
+        on right: 1 9 17
+    pairList <pairList> (23)
+        on left: 3 4 5
+        on right: 2 5
+    pair <pair> (24)
+        on left: 6
+        on right: 4 5
+    value <value> (25)
+        on left: 7 8 9 10 11 12
+        on right: 6 15 16
+    array <array> (26)
+        on left: 13
+        on right: 10
+    valueList <valueList> (27)
+        on left: 14 15 16
+        on right: 13 16
+    loop <loop> (28)
+        on left: 17
+        on right: 11
+    variableRef <varRef> (29)
+        on left: 18
+        on right: 12
+
+
+State 0
+
+    0 $accept: . program $end
+
+    OPEN_BRACE  shift, and go to state 1
+
+    program  go to state 2
+    object   go to state 3
+
+
+State 1
+
+    2 object: OPEN_BRACE . pairList CLOSE_BRACE
+
+    STRING  shift, and go to state 4
+
+    $default  reduce using rule 3 (pairList)
+
+    pairList  go to state 5
+    pair      go to state 6
+
+
+State 2
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 7
+
+
+State 3
+
+    1 program: object .
+
+    $default  reduce using rule 1 (program)
+
+
+State 4
+
+    6 pair: STRING . COLON value
+
+    COLON  shift, and go to state 8
+
+
+State 5
+
+    2 object: OPEN_BRACE pairList . CLOSE_BRACE
+    5 pairList: pairList . COMMA pair
+
+    CLOSE_BRACE  shift, and go to state 9
+    COMMA        shift, and go to state 10
+
+
+State 6
+
+    4 pairList: pair .
+
+    $default  reduce using rule 4 (pairList)
+
+
+State 7
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 8
+
+    6 pair: STRING COLON . value
+
+    OPEN_BRACE    shift, and go to state 1
+    OPEN_BRACKET  shift, and go to state 11
+    FOR           shift, and go to state 12
+    STRING        shift, and go to state 13
+    JSON_NULL     shift, and go to state 14
+    DOLLAR        shift, and go to state 15
+
+    object       go to state 16
+    value        go to state 17
+    array        go to state 18
+    loop         go to state 19
+    variableRef  go to state 20
+
+
+State 9
+
+    2 object: OPEN_BRACE pairList CLOSE_BRACE .
+
+    $default  reduce using rule 2 (object)
+
+
+State 10
+
+    5 pairList: pairList COMMA . pair
+
+    STRING  shift, and go to state 4
+
+    pair  go to state 21
+
+
+State 11
+
+   13 array: OPEN_BRACKET . valueList CLOSE_BRACKET
+
+    OPEN_BRACE    shift, and go to state 1
+    OPEN_BRACKET  shift, and go to state 11
+    FOR           shift, and go to state 12
+    STRING        shift, and go to state 13
+    JSON_NULL     shift, and go to state 14
+    DOLLAR        shift, and go to state 15
+
+    $default  reduce using rule 14 (valueList)
+
+    object       go to state 16
+    value        go to state 22
+    array        go to state 18
+    valueList    go to state 23
+    loop         go to state 19
+    variableRef  go to state 20
+
+
+State 12
+
+   17 loop: FOR . OPEN_PARENTHESIS IDENTIFIER IN object CLOSE_PARENTHESIS object
+
+    OPEN_PARENTHESIS  shift, and go to state 24
+
+
+State 13
+
+    7 value: STRING .
+
+    $default  reduce using rule 7 (value)
+
+
+State 14
+
+    8 value: JSON_NULL .
+
+    $default  reduce using rule 8 (value)
+
+
+State 15
+
+   18 variableRef: DOLLAR . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 25
+
+
+State 16
+
+    9 value: object .
+
+    $default  reduce using rule 9 (value)
+
+
+State 17
+
+    6 pair: STRING COLON value .
+
+    $default  reduce using rule 6 (pair)
+
+
+State 18
+
+   10 value: array .
+
+    $default  reduce using rule 10 (value)
+
+
+State 19
+
+   11 value: loop .
+
+    $default  reduce using rule 11 (value)
+
+
+State 20
+
+   12 value: variableRef .
+
+    $default  reduce using rule 12 (value)
+
+
+State 21
+
+    5 pairList: pairList COMMA pair .
+
+    $default  reduce using rule 5 (pairList)
+
+
+State 22
+
+   15 valueList: value .
+
+    $default  reduce using rule 15 (valueList)
+
+
+State 23
+
+   13 array: OPEN_BRACKET valueList . CLOSE_BRACKET
+   16 valueList: valueList . COMMA value
+
+    CLOSE_BRACKET  shift, and go to state 26
+    COMMA          shift, and go to state 27
+
+
+State 24
+
+   17 loop: FOR OPEN_PARENTHESIS . IDENTIFIER IN object CLOSE_PARENTHESIS object
+
+    IDENTIFIER  shift, and go to state 28
+
+
+State 25
+
+   18 variableRef: DOLLAR IDENTIFIER .
+
+    $default  reduce using rule 18 (variableRef)
+
+
+State 26
+
+   13 array: OPEN_BRACKET valueList CLOSE_BRACKET .
+
+    $default  reduce using rule 13 (array)
+
+
+State 27
+
+   16 valueList: valueList COMMA . value
+
+    OPEN_BRACE    shift, and go to state 1
+    OPEN_BRACKET  shift, and go to state 11
+    FOR           shift, and go to state 12
+    STRING        shift, and go to state 13
+    JSON_NULL     shift, and go to state 14
+    DOLLAR        shift, and go to state 15
+
+    object       go to state 16
+    value        go to state 29
+    array        go to state 18
+    loop         go to state 19
+    variableRef  go to state 20
+
+
+State 28
+
+   17 loop: FOR OPEN_PARENTHESIS IDENTIFIER . IN object CLOSE_PARENTHESIS object
+
+    IN  shift, and go to state 30
+
+
+State 29
+
+   16 valueList: valueList COMMA value .
+
+    $default  reduce using rule 16 (valueList)
+
+
+State 30
+
+   17 loop: FOR OPEN_PARENTHESIS IDENTIFIER IN . object CLOSE_PARENTHESIS object
+
+    OPEN_BRACE  shift, and go to state 1
+
+    object  go to state 31
+
+
+State 31
+
+   17 loop: FOR OPEN_PARENTHESIS IDENTIFIER IN object . CLOSE_PARENTHESIS object
+
+    CLOSE_PARENTHESIS  shift, and go to state 32
+
+
+State 32
+
+   17 loop: FOR OPEN_PARENTHESIS IDENTIFIER IN object CLOSE_PARENTHESIS . object
+
+    OPEN_BRACE  shift, and go to state 1
+
+    object  go to state 33
+
+
+State 33
+
+   17 loop: FOR OPEN_PARENTHESIS IDENTIFIER IN object CLOSE_PARENTHESIS object .
+
+    $default  reduce using rule 17 (loop)

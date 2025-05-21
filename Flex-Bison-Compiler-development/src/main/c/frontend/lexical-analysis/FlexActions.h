@@ -44,15 +44,10 @@ Token CommaLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 Token SemiLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 // Literales
-Token BooleanLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 Token NullLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-Token IntegerLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-Token FloatLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 // Palabras clave
 Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
-
-// Operadores
 Token OperatorLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 
 // Identificadores

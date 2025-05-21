@@ -214,19 +214,14 @@ void releaseLoop(Loop * loop) {
         return;
     }
     
-    // Liberar la inicialización
-    if (loop->initialization != NULL) {
-        releaseExpression(loop->initialization);
+    // Liberar el nombre del iterador
+    if (loop->iteratorName != NULL) {
+        free(loop->iteratorName);
     }
     
-    // Liberar la condición
-    if (loop->condition != NULL) {
-        releaseExpression(loop->condition);
-    }
-    
-    // Liberar el incremento
-    if (loop->increment != NULL) {
-        releaseExpression(loop->increment);
+    // Liberar el objeto iterable
+    if (loop->iterable != NULL) {
+        releaseObject(loop->iterable);
     }
     
     // Liberar el cuerpo

@@ -180,31 +180,10 @@ Token SemiLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 
 // ----- Literales ----- //
 
-Token BooleanLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token) {
-	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->boolean = (token == TRUE) ? true : false;
-	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
-	return token;
-}
-
 Token NullLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 	return JSON_NULL;
-}
-
-Token IntegerLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
-	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->integer = atoi(lexicalAnalyzerContext->lexeme);
-	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
-	return INTEGER;
-}
-
-Token FloatLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
-	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->floating = atof(lexicalAnalyzerContext->lexeme);
-	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
-	return FLOAT;
 }
 
 // ----- Palabras clave ----- //

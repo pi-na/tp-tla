@@ -593,49 +593,8 @@ Conditional * ObjectConditionalSemanticAction(Object * condObject) {
 	return conditional;
 }
 
-Loop * LoopSemanticAction(Expression * initialization, Expression * condition, Expression * increment, Object * body) {
+Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	// Validar la inicialización si existe
-	if (initialization != NULL && 
-		initialization->type != INTEGER_EXPR && 
-		initialization->type != VAR_REF_EXPR) {
-		logError(_logger, "Loop initialization must be an integer or variable reference");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
-	// Validar que la condición sea una expresión booleana o comparación
-	if (condition == NULL || 
-		(condition->type != BOOLEAN_EXPR && 
-		 condition->type != BINARY_EXPR && 
-		 condition->type != VAR_REF_EXPR)) {
-		logError(_logger, "Invalid condition in for loop - must be a boolean expression");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
-	// Si es una expresión binaria, validar que sea una comparación
-	if (condition->type == BINARY_EXPR) {
-		OperatorType op = condition->data.binaryExpr.op;
-		if (op != EQUALS_OP && op != NOT_EQUALS_OP &&
-			op != GREATER_THAN_OP && op != LESS_THAN_OP && 
-			op != GREATER_EQUAL_OP && op != LESS_EQUAL_OP) {
-			logError(_logger, "Loop condition must be a comparison");
-			_currentState->succeed = false;
-			return NULL;
-		}
-	}
-	
-	// Validar el incremento si existe
-	if (increment != NULL && 
-		increment->type != INTEGER_EXPR && 
-		increment->type != BINARY_EXPR &&
-		increment->type != VAR_REF_EXPR) {
-		logError(_logger, "Loop increment must be an integer, arithmetic operation, or variable reference");
-		_currentState->succeed = false;
-		return NULL;
-	}
 	
 	// Validar que el cuerpo tenga la estructura correcta
 	if (body == NULL || !isFirstPairType(body->pairs)) {
@@ -644,10 +603,19 @@ Loop * LoopSemanticAction(Expression * initialization, Expression * condition, E
 		return NULL;
 	}
 	
+	// Validar que el iterable sea un objeto válido
+	if (iterable == NULL) {
+		logError(_logger, "Loop iterable must be a valid object");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
+	// Definir la variable iteradora
+	defineVariable(iteratorName);
+	
 	Loop * loop = calloc(1, sizeof(Loop));
-	loop->initialization = initialization;
-	loop->condition = condition;
-	loop->increment = increment;
+	loop->iteratorName = iteratorName;
+	loop->iterable = iterable;
 	loop->body = body;
 	return loop;
 }

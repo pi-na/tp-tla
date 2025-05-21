@@ -145,9 +145,8 @@ struct Conditional {
 };
 
 struct Loop {
-	Expression * initialization;
-	Expression * condition;
-	Expression * increment;
+	char * iteratorName;
+	Object * iterable;
 	Object * body;
 };
 
