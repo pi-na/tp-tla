@@ -1,0 +1,10 @@
+{
+  "type": "html",
+  "content": {
+    "type": "title",
+    "content": {
+      "type": "div",
+      "content": "Un título no puede contener un div"
+    }
+  }
+} 

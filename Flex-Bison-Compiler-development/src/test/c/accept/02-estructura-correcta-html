@@ -1,0 +1,19 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "head",
+      "content": {
+        "type": "title",
+        "content": "Título de la página"
+      }
+    },
+    {
+      "type": "body",
+      "content": {
+        "type": "p",
+        "content": "Párrafo de prueba"
+      }
+    }
+  ]
+} 

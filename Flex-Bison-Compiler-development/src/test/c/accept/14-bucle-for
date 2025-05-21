@@ -1,0 +1,19 @@
+{
+  "type": "html",
+  "content": {
+    "type": "body",
+    "content": {
+      "type": "div",
+      "content": [
+        {
+          "type": "p",
+          "content": "Item 1"
+        },
+        {
+          "type": "p",
+          "content": "Item 2"
+        }
+      ]
+    }
+  }
+} 

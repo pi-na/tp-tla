@@ -1,0 +1,22 @@
+{
+  "type": "html",
+  "content": {
+    "type": "body",
+    "content": {
+      "type": "ul",
+      "content": {
+        "loop": {
+          "iteratorName": "item",
+          "iterable": {
+            "type": "array",
+            "items": ["Item 1", "Item 2", "Item 3"]
+          },
+          "body": {
+            "type": "li",
+            "content": {"var": "item"}
+          }
+        }
+      }
+    }
+  }
+} 

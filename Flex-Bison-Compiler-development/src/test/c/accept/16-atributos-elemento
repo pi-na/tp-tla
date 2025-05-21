@@ -1,0 +1,22 @@
+{
+  "type": "html",
+  "content": {
+    "type": "body",
+    "content": [
+      {
+        "type": "a",
+        "href": "https://ejemplo.com",
+        "target": "_blank",
+        "class": "enlace-externo",
+        "content": "Enlace con múltiples atributos"
+      },
+      {
+        "type": "img",
+        "src": "imagen.png",
+        "alt": "Imagen de ejemplo",
+        "width": "300",
+        "height": "200"
+      }
+    ]
+  }
+} 

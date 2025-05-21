@@ -1,0 +1,24 @@
+{
+  "type": "html",
+  "content": {
+    "type": "body",
+    "content": [
+      {
+        "type": "h1",
+        "content": "Título principal"
+      },
+      {
+        "type": "p",
+        "content": "Texto normal con un "
+      },
+      {
+        "type": "span",
+        "content": "fragmento resaltado"
+      },
+      {
+        "type": "p",
+        "content": " y después más texto común."
+      }
+    ]
+  }
+} 

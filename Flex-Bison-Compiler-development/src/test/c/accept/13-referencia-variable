@@ -1,0 +1,17 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "div",
+      "content": "Este contenido se repetirá"
+    },
+    {
+      "type": "div",
+      "content": "$variable1"
+    },
+    {
+      "type": "p",
+      "content": "Texto con variable definida"
+    }
+  ]
+} 

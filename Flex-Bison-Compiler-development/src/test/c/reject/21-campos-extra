@@ -1,0 +1,8 @@
+{
+  "type": "html",
+  "content": {
+    "type": "p",
+    "content": "Texto normal",
+    "campo_invalido": "Este campo no es reconocido para elementos p"
+  }
+} 

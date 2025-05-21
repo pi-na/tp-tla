@@ -1,0 +1,40 @@
+{
+  "type": "html",
+  "content": {
+    "type": "body",
+    "content": [
+      {
+        "type": "div",
+        "content": {
+          "type": "ul",
+          "content": [
+            {
+              "type": "li",
+              "content": {
+                "type": "p",
+                "content": "Elemento 1"
+              }
+            },
+            {
+              "type": "li",
+              "content": {
+                "type": "p",
+                "content": "Elemento 2"
+              }
+            },
+            {
+              "type": "li",
+              "content": {
+                "type": "div",
+                "content": {
+                  "type": "span",
+                  "content": "Elemento anidado profundamente"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+} 

@@ -1,0 +1,90 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "head",
+      "content": {
+        "type": "title",
+        "content": "Título de la página"
+      }
+    },
+    {
+      "type": "body",
+      "content": [
+        {
+          "type": "h1",
+          "content": "Encabezado Principal"
+        },
+        {
+          "type": "h2",
+          "content": "Subtítulo"
+        },
+        {
+          "type": "p",
+          "content": "Este es un párrafo de texto."
+        },
+        {
+          "type": "div",
+          "content": [
+            {
+              "type": "span",
+              "content": "Texto en línea"
+            },
+            {
+              "type": "a",
+              "href": "https://ejemplo.com",
+              "content": "Enlace externo"
+            },
+            {
+              "type": "img",
+              "src": "imagen.jpg",
+              "alt": "Descripción de la imagen"
+            }
+          ]
+        },
+        {
+          "type": "ul",
+          "content": [
+            {
+              "type": "li",
+              "content": "Elemento de lista no ordenada 1"
+            },
+            {
+              "type": "li",
+              "content": "Elemento de lista no ordenada 2"
+            }
+          ]
+        },
+        {
+          "type": "ol",
+          "content": [
+            {
+              "type": "li",
+              "content": "Elemento de lista ordenada 1"
+            },
+            {
+              "type": "li",
+              "content": "Elemento de lista ordenada 2"
+            }
+          ]
+        },
+        {
+          "type": "h3",
+          "content": "Encabezado nivel 3"
+        },
+        {
+          "type": "h4",
+          "content": "Encabezado nivel 4"
+        },
+        {
+          "type": "h5",
+          "content": "Encabezado nivel 5"
+        },
+        {
+          "type": "h6",
+          "content": "Encabezado nivel 6"
+        }
+      ]
+    }
+  ]
+} 

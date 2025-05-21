@@ -1,0 +1,13 @@
+{
+  "type": "html",
+  "content": [
+    {
+      "type": "div",
+      "content": "$var2"
+    },
+    {
+      "type": "div",
+      "content": "$var1"
+    }
+  ]
+} 
