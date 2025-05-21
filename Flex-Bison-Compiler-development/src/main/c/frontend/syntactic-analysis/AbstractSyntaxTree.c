@@ -124,11 +124,6 @@ void releaseValue(Value * value) {
                 releaseArray(value->data.arrayValue);
             }
             break;
-        case CONDITIONAL_VALUE:
-            if (value->data.conditionalValue != NULL) {
-                releaseConditional(value->data.conditionalValue);
-            }
-            break;
         case LOOP_VALUE:
             if (value->data.loopValue != NULL) {
                 releaseLoop(value->data.loopValue);
@@ -183,31 +178,6 @@ void releaseValueList(ValueList * valueList) {
     free(valueList);
 }
 
-void releaseConditional(Conditional * conditional) {
-    logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-    if (conditional == NULL) {
-        return;
-    }
-    
-    // Liberar la condición
-    if (conditional->condition != NULL) {
-        releaseExpression(conditional->condition);
-    }
-    
-    // Liberar la rama then
-    if (conditional->thenBranch != NULL) {
-        releaseObject(conditional->thenBranch);
-    }
-    
-    // Liberar la rama else (si existe)
-    if (conditional->elseBranch != NULL) {
-        releaseObject(conditional->elseBranch);
-    }
-    
-    // Liberar el condicional
-    free(conditional);
-}
-
 void releaseLoop(Loop * loop) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (loop == NULL) {
@@ -231,46 +201,6 @@ void releaseLoop(Loop * loop) {
     
     // Liberar el bucle
     free(loop);
-}
-
-void releaseExpression(Expression * expression) {
-    logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-    if (expression == NULL) {
-        return;
-    }
-    
-    // Liberar el contenido según el tipo
-    switch (expression->type) {
-        case STRING_EXPR:
-            if (expression->data.stringValue != NULL) {
-                free(expression->data.stringValue);
-            }
-            break;
-        case VAR_REF_EXPR:
-            if (expression->data.varRefValue != NULL) {
-                releaseVarRef(expression->data.varRefValue);
-            }
-            break;
-        case BINARY_EXPR:
-            if (expression->data.binaryExpr.left != NULL) {
-                releaseExpression(expression->data.binaryExpr.left);
-            }
-            if (expression->data.binaryExpr.right != NULL) {
-                releaseExpression(expression->data.binaryExpr.right);
-            }
-            break;
-        case UNARY_EXPR:
-            if (expression->data.unaryExpr.operand != NULL) {
-                releaseExpression(expression->data.unaryExpr.operand);
-            }
-            break;
-        default:
-            // Para INTEGER_EXPR, FLOAT_EXPR y BOOLEAN_EXPR no hay nada que liberar
-            break;
-    }
-    
-    // Liberar la expresión
-    free(expression);
 }
 
 void releaseVarRef(VarRef * varRef) {

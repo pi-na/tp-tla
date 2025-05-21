@@ -30,13 +30,9 @@ PairList * pairListSemanticAction(PairList * pairList, Pair * newPair);
 Pair * PairSemanticAction(char * key, Value * value);
 
 Value * StringValueSemanticAction(char * value);
-Value * IntegerValueSemanticAction(int value);
-Value * FloatValueSemanticAction(double value);
-Value * BooleanValueSemanticAction(boolean value);
 Value * NullValueSemanticAction();
 Value * ObjectValueSemanticAction(Object * object);
 Value * ArrayValueSemanticAction(Array * array);
-Value * ConditionalValueSemanticAction(Conditional * conditional);
 Value * LoopValueSemanticAction(Loop * loop);
 Value * VariableRefValueSemanticAction(VarRef * varRef);
 Value * ElementValueSemanticAction(Element * element);
@@ -48,14 +44,6 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue);
 
 Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body);
 VarRef * VariableRefSemanticAction(char * name);
-
-Expression * IntegerExpressionSemanticAction(int value);
-Expression * FloatExpressionSemanticAction(double value);
-Expression * StringExpressionSemanticAction(char * value);
-Expression * BooleanExpressionSemanticAction(boolean value);
-Expression * VariableRefExpressionSemanticAction(VarRef * varRef);
-Expression * BinaryExpressionSemanticAction(OperatorType op, Expression * left, Expression * right);
-Expression * UnaryExpressionSemanticAction(OperatorType op, Expression * operand);
 
 AttributeList * emptyAttributeListAction();
 AttributeList * singleAttributeListSemanticAction(Attribute * attribute);

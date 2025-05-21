@@ -115,15 +115,6 @@ void dumpValue(Value* value, int indent) {
         case STRING_VALUE:
             printf("\"%s\"\n", value->data.stringValue);
             break;
-        case INTEGER_VALUE:
-            printf("%d\n", value->data.integerValue);
-            break;
-        case FLOAT_VALUE:
-            printf("%f\n", value->data.floatValue);
-            break;
-        case BOOLEAN_VALUE:
-            printf("%s\n", value->data.booleanValue ? "true" : "false");
-            break;
         case NULL_VALUE:
             printf("null\n");
             break;

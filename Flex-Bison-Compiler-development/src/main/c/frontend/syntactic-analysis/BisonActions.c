@@ -395,30 +395,6 @@ Value * StringValueSemanticAction(char * value) {
 	return val;
 }
 
-Value * IntegerValueSemanticAction(int value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Value * val = calloc(1, sizeof(Value));
-	val->type = INTEGER_VALUE;
-	val->data.integerValue = value;
-	return val;
-}
-
-Value * FloatValueSemanticAction(double value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Value * val = calloc(1, sizeof(Value));
-	val->type = FLOAT_VALUE;
-	val->data.floatValue = value;
-	return val;
-}
-
-Value * BooleanValueSemanticAction(boolean value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Value * val = calloc(1, sizeof(Value));
-	val->type = BOOLEAN_VALUE;
-	val->data.booleanValue = value;
-	return val;
-}
-
 Value * NullValueSemanticAction() {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Value * val = calloc(1, sizeof(Value));
@@ -439,14 +415,6 @@ Value * ArrayValueSemanticAction(Array * array) {
 	Value * val = calloc(1, sizeof(Value));
 	val->type = ARRAY_VALUE;
 	val->data.arrayValue = array;
-	return val;
-}
-
-Value * ConditionalValueSemanticAction(Conditional * conditional) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Value * val = calloc(1, sizeof(Value));
-	val->type = CONDITIONAL_VALUE;
-	val->data.conditionalValue = conditional;
 	return val;
 }
 
@@ -575,82 +543,6 @@ VarRef * VariableRefSemanticAction(char * name) {
 	setVariableResolutionStatus(name, true);
 	
 	return varRef;
-}
-
-Expression * IntegerExpressionSemanticAction(int value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expr = calloc(1, sizeof(Expression));
-	expr->type = INTEGER_EXPR;
-	expr->data.integerValue = value;
-	return expr;
-}
-
-Expression * FloatExpressionSemanticAction(double value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expr = calloc(1, sizeof(Expression));
-	expr->type = FLOAT_EXPR;
-	expr->data.floatValue = value;
-	return expr;
-}
-
-Expression * StringExpressionSemanticAction(char * value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expr = calloc(1, sizeof(Expression));
-	expr->type = STRING_EXPR;
-	expr->data.stringValue = value;
-	return expr;
-}
-
-Expression * BooleanExpressionSemanticAction(boolean value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expr = calloc(1, sizeof(Expression));
-	expr->type = BOOLEAN_EXPR;
-	expr->data.booleanValue = value;
-	return expr;
-}
-
-Expression * VariableRefExpressionSemanticAction(VarRef * varRef) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expr = calloc(1, sizeof(Expression));
-	expr->type = VAR_REF_EXPR;
-	expr->data.varRefValue = varRef;
-	return expr;
-}
-
-Expression * BinaryExpressionSemanticAction(OperatorType op, Expression * left, Expression * right) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	// Validar que los operandos sean del tipo correcto según el operador
-	if (op == ADD_OP || op == SUB_OP || op == MUL_OP || op == DIV_OP) {
-		if ((left->type != INTEGER_EXPR && left->type != FLOAT_EXPR) ||
-			(right->type != INTEGER_EXPR && right->type != FLOAT_EXPR)) {
-			logError(_logger, "Arithmetic operators require numeric operands");
-			_currentState->succeed = false;
-			return NULL;
-		}
-	} else if (op == AND_OP || op == OR_OP) {
-		if (left->type != BOOLEAN_EXPR || right->type != BOOLEAN_EXPR) {
-			logError(_logger, "Logical operators require boolean operands");
-			_currentState->succeed = false;
-			return NULL;
-		}
-	}
-	
-	Expression * expr = calloc(1, sizeof(Expression));
-	expr->type = BINARY_EXPR;
-	expr->data.binaryExpr.op = op;
-	expr->data.binaryExpr.left = left;
-	expr->data.binaryExpr.right = right;
-	return expr;
-}
-
-Expression * UnaryExpressionSemanticAction(OperatorType op, Expression * operand) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression * expr = calloc(1, sizeof(Expression));
-	expr->type = UNARY_EXPR;
-	expr->data.unaryExpr.op = op;
-	expr->data.unaryExpr.operand = operand;
-	return expr;
 }
 
 AttributeList * emptyAttributeListAction() {
