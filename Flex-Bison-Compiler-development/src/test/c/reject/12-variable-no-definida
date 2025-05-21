@@ -1,7 +1,12 @@
 {
   "type": "html",
-  "content": {
-    "type": "p",
-    "content": {"var": "variableNoDefinida"}
-  }
+  "content": [
+    {
+      "type": "body",
+      "content": {
+        "type": "span",
+        "content": $variableNoDefinida
+      }
+    }
+  ]
 } 
