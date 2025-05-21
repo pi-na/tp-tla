@@ -1,0 +1,12 @@
+{
+  "type": "html",
+  "content": [
+    {
+        "type": "body",
+        "content": {
+            "type": "p",
+            "content": "hohla"
+        }
+    }
+  ]
+}
