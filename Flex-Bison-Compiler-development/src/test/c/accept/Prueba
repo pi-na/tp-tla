@@ -1,0 +1,20 @@
+{
+    "type": "html",
+    "content": [
+      {
+        "type": "head",
+        "content": {
+          "type": "title",
+          "content": "Página Simple"
+        }
+      },
+      {
+        "type": "body",
+        "content": {
+          "type": "p",
+          "content": "Hola Mundo"
+        }
+      }
+    ]
+  }
+  

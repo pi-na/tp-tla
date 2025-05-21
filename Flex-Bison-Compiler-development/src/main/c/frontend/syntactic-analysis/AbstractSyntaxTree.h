@@ -46,7 +46,8 @@ typedef enum {
     ARRAY_VALUE,
     CONDITIONAL_VALUE,
     LOOP_VALUE,
-    VAR_REF_VALUE
+    VAR_REF_VALUE,
+    ELEMENT_VALUE
 } ValueType;
 
 /**
@@ -124,6 +125,7 @@ struct Value {
 		Conditional * conditionalValue;
 		Loop * loopValue;
 		VarRef * varRefValue;
+		Element * elementValue;
 	} data;
 };
 

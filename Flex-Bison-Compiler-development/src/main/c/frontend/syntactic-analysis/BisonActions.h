@@ -39,6 +39,7 @@ Value * ArrayValueSemanticAction(Array * array);
 Value * ConditionalValueSemanticAction(Conditional * conditional);
 Value * LoopValueSemanticAction(Loop * loop);
 Value * VariableRefValueSemanticAction(VarRef * varRef);
+Value * ElementValueSemanticAction(Element * element);
 
 Array * ArraySemanticAction(ValueList * values);
 ValueList * emptyValueListAction();
@@ -46,6 +47,7 @@ ValueList * singleValueListSemanticAction(Value * value);
 ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue);
 
 Conditional * ConditionalSemanticAction(Expression * condition, Object * thenBranch, Object * elseBranch);
+Conditional * ObjectConditionalSemanticAction(Object * condObject);
 Loop * LoopSemanticAction(Expression * initialization, Expression * condition, Expression * increment, Object * body);
 VarRef * VariableRefSemanticAction(char * name);
 
@@ -62,6 +64,6 @@ AttributeList * singleAttributeListSemanticAction(Attribute * attribute);
 AttributeList * attributeListSemanticAction(AttributeList * attributeList, Attribute * newAttribute);
 Attribute * AttributeSemanticAction(char * name, Value * value);
 
-Element * ElementSemanticAction(char * tag, AttributeList * attributes, ValueList * children);
+Element * ElementSemanticAction(Object * object);
 
 #endif

@@ -8,6 +8,12 @@
 #include "shared/Environment.h"
 #include "shared/Logger.h"
 #include "shared/String.h"
+#include <stdio.h>
+#include <string.h>
+
+// Forward declaration of helper functions
+void dumpObject(Object* obj, int indent);
+void dumpValue(Value* value, int indent);
 
 /**
  * The main entry-point of the entire application. If you use "strtok" to
@@ -38,25 +44,20 @@ const int main(const int count, const char ** arguments) {
 	CompilationStatus compilationStatus = SUCCEED;
 	Program * program = compilerState.abstractSyntaxtTree;
 	if (syntacticAnalysisStatus == ACCEPT) {
-		// ----------------------------------------------------------------------------------------
-		// Beginning of the Backend... ------------------------------------------------------------
-		/*
-		logDebugging(logger, "Computing expression value...");
-		ComputationResult computationResult = computeExpression(program->expression);
-		if (computationResult.succeed) {
-			compilerState.value = computationResult.value;
-			generate(&compilerState);
+		// Print success message
+		printf("COMPILATION SUCCESSFUL!\n");
+		
+		// Debug: dump the AST if in debug mode
+		#ifdef DEBUG
+		if (program != NULL && program->object != NULL) {
+			printf("AST DUMP:\n");
+			dumpObject(program->object, 0);
 		}
-		else {
-			logError(logger, "The computation phase rejects the input program.");
-			compilationStatus = FAILED;
-		}
-		*/
-		// ...end of the Backend. -----------------------------------------------------------------
-		// ----------------------------------------------------------------------------------------
+		#endif
 	}
 	else {
 		logError(logger, "The syntactic-analysis phase rejects the input program.");
+		printf("COMPILATION FAILED: Syntactic analysis rejected the input\n");
 		compilationStatus = FAILED;
 	}
 	logDebugging(logger, "Releasing AST resources...");
@@ -71,4 +72,81 @@ const int main(const int count, const char ** arguments) {
 	logDebugging(logger, "Compilation is done.");
 	destroyLogger(logger);
 	return compilationStatus;
+}
+
+// Helper function to print indentation
+void printIndent(int indent) {
+    for (int i = 0; i < indent; i++) {
+        printf("  ");
+    }
+}
+
+// Dump the content of an object (JSON-like)
+void dumpObject(Object* obj, int indent) {
+    if (obj == NULL) {
+        printIndent(indent);
+        printf("NULL\n");
+        return;
+    }
+    
+    printIndent(indent);
+    printf("{\n");
+    
+    PairList* current = obj->pairs;
+    while (current != NULL) {
+        printIndent(indent + 1);
+        printf("\"%s\": ", current->pair->key);
+        dumpValue(current->pair->value, indent + 1);
+        current = current->next;
+    }
+    
+    printIndent(indent);
+    printf("}\n");
+}
+
+// Dump a value
+void dumpValue(Value* value, int indent) {
+    if (value == NULL) {
+        printf("NULL\n");
+        return;
+    }
+    
+    switch (value->type) {
+        case STRING_VALUE:
+            printf("\"%s\"\n", value->data.stringValue);
+            break;
+        case INTEGER_VALUE:
+            printf("%d\n", value->data.integerValue);
+            break;
+        case FLOAT_VALUE:
+            printf("%f\n", value->data.floatValue);
+            break;
+        case BOOLEAN_VALUE:
+            printf("%s\n", value->data.booleanValue ? "true" : "false");
+            break;
+        case NULL_VALUE:
+            printf("null\n");
+            break;
+        case OBJECT_VALUE:
+            printf("\n");
+            dumpObject(value->data.objectValue, indent + 1);
+            break;
+        case ARRAY_VALUE:
+            printf("[\n");
+            ValueList* valueList = value->data.arrayValue->values;
+            while (valueList != NULL) {
+                printIndent(indent + 1);
+                dumpValue(valueList->value, indent + 1);
+                valueList = valueList->next;
+            }
+            printIndent(indent);
+            printf("]\n");
+            break;
+        case ELEMENT_VALUE:
+            printf("<Element \"%s\">\n", value->data.elementValue->tag);
+            break;
+        default:
+            printf("Unknown value type: %d\n", value->type);
+            break;
+    }
 }

@@ -1,10 +1,14 @@
 #include "SyntacticAnalyzer.h"
 #include "../lexical-analysis/LexicalAnalyzerContext.h"
+#include <stdio.h>
 
 /* MODULE INTERNAL STATE */
 
 static CompilerState * _currentCompilerState = NULL;
 static Logger * _logger = NULL;
+
+// External variables from Bison
+extern int yydebug;
 
 void initializeSyntacticAnalyzerModule() {
 	_logger = createLogger("SyntacticAnalyzer");
@@ -36,7 +40,7 @@ extern int yyparse(void);
 // Bison error-reporting function.
 void yyerror(const char * string) {
 	LexicalAnalyzerContext * lexicalAnalyzerContext = createLexicalAnalyzerContext();
-	logError(_logger, "Syntax error (on line %d).", lexicalAnalyzerContext->line);
+	logError(_logger, "Syntax error (on line %d): %s", lexicalAnalyzerContext->line, string);
 }
 
 /* PUBLIC FUNCTIONS */
@@ -48,6 +52,13 @@ CompilerState * currentCompilerState() {
 SyntacticAnalysisStatus parse(CompilerState * compilerState) {
 	logDebugging(_logger, "Parsing...");
 	_currentCompilerState = compilerState;
+	
+	// Enable Bison debug output if DEBUG is defined
+#ifdef DEBUG
+	yydebug = 1;
+	printf("BISON DEBUG ENABLED\n");
+#endif
+	
 	const int code = yyparse();
 	_currentCompilerState = NULL;
 	SyntacticAnalysisStatus syntacticAnalysisStatus;

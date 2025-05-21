@@ -77,13 +77,15 @@ void BeginStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 }
 
-void EndStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
+int EndStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
 	// Asignar el string completo al valor semántico
 	lexicalAnalyzerContext->semanticValue->string = strdup(_currentString);
+	// printf("DEBUG: Completed string: '%s', returning STRING token\n", _currentString);
 	free(_currentString);
 	_currentString = NULL;
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
+	return STRING;
 }
 
 void StringContentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
@@ -93,6 +95,8 @@ void StringContentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) 
 	size_t lexemeLength = lexicalAnalyzerContext->length;
 	_currentString = realloc(_currentString, currentLength + lexemeLength + 1);
 	strcat(_currentString, lexicalAnalyzerContext->lexeme);
+	// printf("DEBUG: String content added: '%s', current string: '%s', token will be: %d\n", 
+    //        lexicalAnalyzerContext->lexeme, _currentString, STRING);
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 }
 

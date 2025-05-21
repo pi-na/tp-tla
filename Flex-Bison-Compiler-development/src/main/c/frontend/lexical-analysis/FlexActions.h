@@ -1,10 +1,11 @@
 #ifndef FLEX_ACTIONS_HEADER
 #define FLEX_ACTIONS_HEADER
 
+#include "../../shared/Type.h"
+#include "../../shared/CompilerState.h"
 #include "../../shared/Environment.h"
 #include "../../shared/Logger.h"
 #include "../../shared/String.h"
-#include "../../shared/Type.h"
 #include "../syntactic-analysis/AbstractSyntaxTree.h"
 #include "../syntactic-analysis/BisonParser.h"
 #include "LexicalAnalyzerContext.h"
@@ -28,7 +29,7 @@ void IgnoredLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 // Cadenas
 void BeginStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-void EndStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+int EndStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 void StringContentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 void EscapedCharacterStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 void UnicodeCharacterStringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);

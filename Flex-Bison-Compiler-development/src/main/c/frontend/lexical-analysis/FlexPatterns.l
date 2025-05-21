@@ -38,7 +38,7 @@ UNICODE         \\u[0-9a-fA-F]{4}
 <MULTILINE_COMMENT>.                { IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
 \"                                  { BEGIN(STRING); BeginStringLexemeAction(createLexicalAnalyzerContext()); }
-<STRING>\"                          { EndStringLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); return STRING; }
+<STRING>\"                          { int token = EndStringLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); return token; }
 <STRING>{ESCAPED}                   { EscapedCharacterStringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>{UNICODE}                   { UnicodeCharacterStringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>[^\\"]+                     { StringContentLexemeAction(createLexicalAnalyzerContext()); }

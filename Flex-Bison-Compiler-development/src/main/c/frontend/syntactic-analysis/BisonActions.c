@@ -1,17 +1,93 @@
 #include "BisonActions.h"
+#include <string.h>
 
 /* MODULE INTERNAL STATE */
 
 static Logger * _logger = NULL;
+static CompilerState * _currentState = NULL;  // Para mantener el estado actual
+
+// Sistema de seguimiento de variables
+#define MAX_VARIABLES 100
+static struct {
+	char* name;
+	boolean isDefined;
+} variables[MAX_VARIABLES];
+static int variableCount = 0;
+
+// Lista de elementos HTML válidos
+static const char* validElements[] = {
+	"html", "head", "body", "title", "p", "div", "span", "a", "img", "ul", "ol", "li", NULL
+};
+
+// Funciones de validación
+static boolean isValidElement(const char* type) {
+	if (type == NULL) return false;
+	for (int i = 0; validElements[i] != NULL; i++) {
+		if (strcmp(type, validElements[i]) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
+static boolean isFirstPairType(PairList* pairs) {
+	if (pairs == NULL || pairs->pair == NULL || pairs->pair->key == NULL) {
+		return false;
+	}
+	return strcmp(pairs->pair->key, "type") == 0;
+}
+
+static boolean hasDuplicateKeys(PairList* pairs) {
+	for (PairList* outer = pairs; outer != NULL; outer = outer->next) {
+		for (PairList* inner = outer->next; inner != NULL; inner = inner->next) {
+			if (strcmp(outer->pair->key, inner->pair->key) == 0) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+static void defineVariable(const char* name) {
+	for (int i = 0; i < variableCount; i++) {
+		if (strcmp(variables[i].name, name) == 0) {
+			variables[i].isDefined = true;
+			return;
+		}
+	}
+	if (variableCount < MAX_VARIABLES) {
+		variables[variableCount].name = strdup(name);
+		variables[variableCount].isDefined = true;
+		variableCount++;
+	}
+}
+
+static boolean isVariableDefined(const char* name) {
+	for (int i = 0; i < variableCount; i++) {
+		if (strcmp(variables[i].name, name) == 0) {
+			return variables[i].isDefined;
+		}
+	}
+	return false;
+}
+
+static void clearVariables() {
+	for (int i = 0; i < variableCount; i++) {
+		free(variables[i].name);
+	}
+	variableCount = 0;
+}
 
 void initializeBisonActionsModule() {
 	_logger = createLogger("BisonActions");
+	clearVariables();
 }
 
 void shutdownBisonActionsModule() {
 	if (_logger != NULL) {
 		destroyLogger(_logger);
 	}
+	clearVariables();
 }
 
 /** IMPORTED FUNCTIONS */
@@ -33,9 +109,35 @@ static void _logSyntacticAnalyzerAction(const char * functionName) {
 
 Program * ObjectProgramSemanticAction(CompilerState * compilerState, Object * object) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	_currentState = compilerState;  // Guardar el estado actual
+	
+	// Validar que el objeto raíz tenga 'type' como primer campo
+	if (!isFirstPairType(object->pairs)) {
+		logError(_logger, "The 'type' field must be the first field in the object");
+		compilerState->succeed = false;
+		return NULL;
+	}
+	
+	// Validar que no haya campos duplicados
+	if (hasDuplicateKeys(object->pairs)) {
+		logError(_logger, "Duplicate keys found in object");
+		compilerState->succeed = false;
+		return NULL;
+	}
+	
+	// Validar que el tipo sea un elemento HTML válido
+	if (object->pairs && object->pairs->pair && object->pairs->pair->value->type == STRING_VALUE) {
+		if (!isValidElement(object->pairs->pair->value->data.stringValue)) {
+			logError(_logger, "Invalid HTML element type: %s", object->pairs->pair->value->data.stringValue);
+			compilerState->succeed = false;
+			return NULL;
+		}
+	}
+	
 	Program * program = calloc(1, sizeof(Program));
 	program->object = object;
 	compilerState->abstractSyntaxtTree = program;
+	
 	if (0 < flexCurrentContext()) {
 		logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
 		compilerState->succeed = false;
@@ -48,6 +150,14 @@ Program * ObjectProgramSemanticAction(CompilerState * compilerState, Object * ob
 
 Object * ObjectSemanticAction(PairList * pairs) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	
+	// Validar que no haya campos duplicados
+	if (hasDuplicateKeys(pairs)) {
+		logError(_logger, "Duplicate keys found in object");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
 	Object * object = calloc(1, sizeof(Object));
 	object->pairs = pairs;
 	return object;
@@ -186,9 +296,24 @@ Value * LoopValueSemanticAction(Loop * loop) {
 
 Value * VariableRefValueSemanticAction(VarRef * varRef) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	
+	// Si la referencia es NULL (debido a un error), propagar el error
+	if (varRef == NULL) {
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
 	Value * val = calloc(1, sizeof(Value));
 	val->type = VAR_REF_VALUE;
 	val->data.varRefValue = varRef;
+	return val;
+}
+
+Value * ElementValueSemanticAction(Element * element) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Value * val = calloc(1, sizeof(Value));
+	val->type = ELEMENT_VALUE;
+	val->data.elementValue = element;
 	return val;
 }
 
@@ -228,6 +353,30 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 
 Conditional * ConditionalSemanticAction(Expression * condition, Object * thenBranch, Object * elseBranch) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	
+	// Validar que la condición sea una expresión booleana
+	if (condition == NULL || 
+		(condition->type != BOOLEAN_EXPR && 
+		 condition->type != BINARY_EXPR && 
+		 condition->type != UNARY_EXPR)) {
+		logError(_logger, "Invalid condition in if statement - must be a boolean expression");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
+	// Validar que las ramas tengan la estructura correcta
+	if (thenBranch == NULL || !isFirstPairType(thenBranch->pairs)) {
+		logError(_logger, "Then branch must be a valid HTML element with 'type' as first field");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
+	if (elseBranch != NULL && !isFirstPairType(elseBranch->pairs)) {
+		logError(_logger, "Else branch must be a valid HTML element with 'type' as first field");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
 	Conditional * conditional = calloc(1, sizeof(Conditional));
 	conditional->condition = condition;
 	conditional->thenBranch = thenBranch;
@@ -235,8 +384,59 @@ Conditional * ConditionalSemanticAction(Expression * condition, Object * thenBra
 	return conditional;
 }
 
+Conditional * ObjectConditionalSemanticAction(Object * condObject) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	
+	Conditional * conditional = calloc(1, sizeof(Conditional));
+	
+	// Extract condition, then and else from the object
+	PairList * currentPair = condObject->pairs;
+	Object * thenObj = NULL;
+	Object * elseObj = NULL;
+	Expression * condExpr = NULL;
+	
+	while (currentPair != NULL) {
+		if (strcmp(currentPair->pair->key, "condition") == 0) {
+			// Convert value to expression
+			if (currentPair->pair->value->type == BOOLEAN_VALUE) {
+				condExpr = BooleanExpressionSemanticAction(currentPair->pair->value->data.booleanValue);
+			}
+			// Handle other types if needed
+		} else if (strcmp(currentPair->pair->key, "then") == 0 && currentPair->pair->value->type == OBJECT_VALUE) {
+			thenObj = currentPair->pair->value->data.objectValue;
+		} else if (strcmp(currentPair->pair->key, "else") == 0 && currentPair->pair->value->type == OBJECT_VALUE) {
+			elseObj = currentPair->pair->value->data.objectValue;
+		}
+		currentPair = currentPair->next;
+	}
+	
+	conditional->condition = condExpr;
+	conditional->thenBranch = thenObj;
+	conditional->elseBranch = elseObj;
+	
+	return conditional;
+}
+
 Loop * LoopSemanticAction(Expression * initialization, Expression * condition, Expression * increment, Object * body) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	
+	// Validar que la condición sea una expresión booleana
+	if (condition == NULL || 
+		(condition->type != BOOLEAN_EXPR && 
+		 condition->type != BINARY_EXPR && 
+		 condition->type != UNARY_EXPR)) {
+		logError(_logger, "Invalid condition in for loop - must be a boolean expression");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
+	// Validar que el cuerpo tenga la estructura correcta
+	if (body == NULL || !isFirstPairType(body->pairs)) {
+		logError(_logger, "Loop body must be a valid HTML element with 'type' as first field");
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
 	Loop * loop = calloc(1, sizeof(Loop));
 	loop->initialization = initialization;
 	loop->condition = condition;
@@ -247,6 +447,14 @@ Loop * LoopSemanticAction(Expression * initialization, Expression * condition, E
 
 VarRef * VariableRefSemanticAction(char * name) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+	
+	// Validar que la variable esté definida
+	if (!isVariableDefined(name)) {
+		logError(_logger, "Variable '%s' is not defined", name);
+		_currentState->succeed = false;
+		return NULL;
+	}
+	
 	VarRef * varRef = calloc(1, sizeof(VarRef));
 	varRef->name = name;
 	return varRef;
@@ -346,12 +554,46 @@ Attribute * AttributeSemanticAction(char * name, Value * value) {
 	return attribute;
 }
 
-Element * ElementSemanticAction(char * tag, AttributeList * attributes, ValueList * children) {
+Element * ElementSemanticAction(Object * object) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Element * element = calloc(1, sizeof(Element));
-	element->tag = tag;
+	
+	// Extract the type and content from the object
+	PairList * currentPair = object->pairs;
+	char * type = NULL;
+	Value * content = NULL;
+	AttributeList * attributes = NULL;
+	
+	while (currentPair != NULL) {
+		if (strcmp(currentPair->pair->key, "type") == 0 && currentPair->pair->value->type == STRING_VALUE) {
+			type = currentPair->pair->value->data.stringValue;
+		} else if (strcmp(currentPair->pair->key, "content") == 0) {
+			content = currentPair->pair->value;
+		} else {
+			// Other attributes can be processed here
+			attributes = attributeListSemanticAction(attributes, 
+				AttributeSemanticAction(currentPair->pair->key, currentPair->pair->value));
+		}
+		currentPair = currentPair->next;
+	}
+	
+	element->tag = type;
 	element->attributes = attributes;
-	element->children = children;
+	
+	// Handle content value - could be a single value or an array
+	if (content != NULL) {
+		if (content->type == ARRAY_VALUE) {
+			// Content is an array, use its values directly
+			ValueList * contentValues = content->data.arrayValue->values;
+			element->children = contentValues;
+		} else {
+			// Content is a single value, create a value list with just this value
+			element->children = singleValueListSemanticAction(content);
+		}
+	} else {
+		element->children = NULL;
+	}
+	
 	return element;
 }
 

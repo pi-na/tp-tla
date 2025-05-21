@@ -1,5 +1,7 @@
 %{
 
+#include "../../shared/Type.h"
+#include "AbstractSyntaxTree.h"
 #include "BisonActions.h"
 
 %}
@@ -18,8 +20,6 @@
 	/** Non-terminals. */
 	Program * program;
 	Object * object;
-	EntryList * entryList;
-	Entry * entry;
 	
 	// Nuevos nodos del AST
 	ValueList * valueList;
@@ -44,8 +44,6 @@
  *
  * @see https://www.gnu.org/software/bison/manual/html_node/Destructor-Decl.html
  */
-%destructor { releaseEntryList($$); } <entryList>
-%destructor { releaseEntry($$); } <entry>
 %destructor { releaseValueList($$); } <valueList>
 %destructor { releaseValue($$); } <value>
 %destructor { releaseArray($$); } <array>
@@ -89,8 +87,6 @@
 /** Non-terminals. */
 %type <program> program
 %type <object> object
-%type <entryList> entryList
-%type <entry> entry
 %type <pair> pair
 %type <pairList> pairList
 %type <value> value
@@ -189,6 +185,17 @@ expression: INTEGER                                           { $$ = IntegerExpr
     | expression MUL expression                               { $$ = BinaryExpressionSemanticAction(MUL_OP, $1, $3); }
     | expression DIV expression                               { $$ = BinaryExpressionSemanticAction(DIV_OP, $1, $3); }
     | OPEN_PARENTHESIS expression CLOSE_PARENTHESIS           { $$ = $2; }
+    ;
+
+element: object                                              { $$ = ElementSemanticAction($1); }
+    ;
+
+attributeList: %empty                                        { $$ = emptyAttributeListAction(); }
+    | attribute                                              { $$ = singleAttributeListSemanticAction($1); }
+    | attributeList COMMA attribute                          { $$ = attributeListSemanticAction($1, $3); }
+    ;
+
+attribute: STRING COLON value                               { $$ = AttributeSemanticAction($1, $3); }
     ;
 
 %%
