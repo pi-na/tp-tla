@@ -5,14 +5,14 @@
       "type": "head",
       "content": {
         "type": "title",
-        "content": {"var": "pageTitle"}
+        "content": $pageTitle
       }
     },
     {
       "type": "body",
       "content": {
         "type": "h1",
-        "content": {"var": "userName"}
+        "content": $userName
       }
     }
   ]

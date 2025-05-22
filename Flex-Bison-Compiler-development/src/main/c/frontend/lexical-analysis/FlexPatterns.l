@@ -79,6 +79,7 @@ $iterate                              { return KeywordLexemeAction(createLexical
 <STRING>\\                          { InvalidStringEscapeLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>.                           { StringContentLexemeAction(createLexicalAnalyzerContext()); }
 
+{IDENTIFIER}                        { return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 
 "("                                 { return ParenthesisLexemeAction(createLexicalAnalyzerContext(), OPEN_PARENTHESIS); }
 ")"                                 { return ParenthesisLexemeAction(createLexicalAnalyzerContext(), CLOSE_PARENTHESIS); }
