@@ -106,7 +106,7 @@
 %type <valueList> valueList
 %type <varRef> variableRef
 %type <value> text
-%type <value> key
+%type <keyword> key
 
 %%
 
