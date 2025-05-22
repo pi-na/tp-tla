@@ -45,6 +45,8 @@ UNICODE         \\u[0-9a-fA-F]{4}
 <STRING>\\                          { InvalidStringEscapeLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>.                           { StringContentLexemeAction(createLexicalAnalyzerContext()); }
 
+"type"                              { return KeywordLexemeAction(createLexicalAnalyzerContext(), TYPE) }
+
 "("                                 { return ParenthesisLexemeAction(createLexicalAnalyzerContext(), OPEN_PARENTHESIS); }
 ")"                                 { return ParenthesisLexemeAction(createLexicalAnalyzerContext(), CLOSE_PARENTHESIS); }
 

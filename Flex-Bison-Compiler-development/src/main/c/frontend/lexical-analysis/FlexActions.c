@@ -186,7 +186,7 @@ Token NullLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	return JSON_NULL;
 }
 
-// ----- Palabras clave ----- //
+// ----- KEYS ----- //
 
 Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token) {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
