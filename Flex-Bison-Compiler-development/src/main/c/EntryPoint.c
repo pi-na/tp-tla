@@ -133,9 +133,6 @@ void dumpValue(Value* value, int indent) {
             printIndent(indent);
             printf("]\n");
             break;
-        case ELEMENT_VALUE:
-            printf("<Element \"%s\">\n", value->data.elementValue->tag);
-            break;
         default:
             printf("Unknown value type: %d\n", value->type);
             break;
