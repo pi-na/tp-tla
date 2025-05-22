@@ -5,6 +5,7 @@ Terminals unused in grammar
     SEMI
     IN
     UNKNOWN
+    ITERATE_STRING
 
 
 Grammar
@@ -15,52 +16,54 @@ Grammar
 
     2 object: OPEN_BRACE pairList CLOSE_BRACE
 
-    3 pairList: %empty
-    4         | pair
-    5         | pairList COMMA pair
+    3 pairList: pair
+    4         | pairList COMMA pair
 
-    6 pair: key COLON value
+    5 pair: key COLON value
 
-    7 key: TYPE
-    8    | CONTENT
-    9    | LOOP
+    6 key: TYPE
+    7    | CONTENT
+    8    | LOOP
+    9    | ITERABLE
+   10    | ITERATE
 
-   10 value: STRING
-   11      | JSON_NULL
-   12      | object
-   13      | array
-   14      | variableRef
-   15      | DIV
-   16      | VAR
-   17      | IMG
-   18      | SRC
-   19      | ALT
-   20      | BODY
-   21      | REF
-   22      | STYLE
-   23      | text
-   24      | property
+   11 value: STRING
+   12      | JSON_NULL
+   13      | object
+   14      | array
+   15      | variableRef
+   16      | DIV
+   17      | VAR
+   18      | IMG
+   19      | SRC
+   20      | ALT
+   21      | BODY
+   22      | REF
+   23      | STYLE
+   24      | ITERATOR_REF
+   25      | text
+   26      | property
 
-   25 property: TEXTALIGN
-   26         | COLOR
-   27         | BACKGROUND_COLOR
+   27 property: TEXTALIGN
+   28         | COLOR
+   29         | BACKGROUND_COLOR
 
-   28 text: H1
-   29     | H2
-   30     | H3
-   31     | H4
-   32     | A
-   33     | SPAN
-   34     | P
-   35     | TITLE
+   30 text: H1
+   31     | H2
+   32     | H3
+   33     | H4
+   34     | A
+   35     | SPAN
+   36     | P
+   37     | TITLE
 
-   36 array: OPEN_BRACKET valueList CLOSE_BRACKET
+   38 array: OPEN_BRACKET valueList CLOSE_BRACKET
 
-   37 valueList: %empty
-   38          | value
-   39          | valueList COMMA value
+   39 valueList: %empty
+   40          | value
+   41          | valueList COMMA value
 
-   40 variableRef: DOLLAR IDENTIFIER
+   42 variableRef: DOLLAR IDENTIFIER
 
 
 Terminals, with rules where they appear
@@ -71,78 +74,82 @@ Terminals, with rules where they appear
     OPEN_PARENTHESIS <token> (259)
     OPEN_BRACE <token> (260) 2
     CLOSE_BRACE <token> (261) 2
-    OPEN_BRACKET <token> (262) 36
-    CLOSE_BRACKET <token> (263) 36
-    COMMA <token> (264) 5 39
-    COLON <token> (265) 6
+    OPEN_BRACKET <token> (262) 38
+    CLOSE_BRACKET <token> (263) 38
+    COMMA <token> (264) 4 41
+    COLON <token> (265) 5
     SEMI <token> (266)
-    LOOP <token> (267) 9
+    LOOP <token> (267) 8
     IN <token> (268)
-    STRING <string> (269) 10
-    IDENTIFIER <string> (270) 40
-    JSON_NULL <token> (271) 11
-    DOLLAR <token> (272) 40
+    STRING <string> (269) 11
+    IDENTIFIER <string> (270) 42
+    JSON_NULL <token> (271) 12
+    DOLLAR <token> (272) 42
     UNKNOWN <token> (273)
-    TYPE <token> (274) 7
-    CONTENT <token> (275) 8
-    DIV <token> (276) 15
-    VAR <token> (277) 16
-    IMG <token> (278) 17
-    SRC <token> (279) 18
-    ALT <token> (280) 19
-    BODY <token> (281) 20
-    REF <token> (282) 21
-    H1 <token> (283) 28
-    H2 <token> (284) 29
-    H3 <token> (285) 30
-    H4 <token> (286) 31
-    A <token> (287) 32
-    SPAN <token> (288) 33
-    P <token> (289) 34
-    TITLE <token> (290) 35
-    TEXTALIGN <token> (291) 25
-    COLOR <token> (292) 26
-    BACKGROUND_COLOR <token> (293) 27
-    STYLE <token> (294) 22
+    TYPE <token> (274) 6
+    CONTENT <token> (275) 7
+    DIV <token> (276) 16
+    VAR <token> (277) 17
+    IMG <token> (278) 18
+    SRC <token> (279) 19
+    ALT <token> (280) 20
+    BODY <token> (281) 21
+    REF <token> (282) 22
+    H1 <token> (283) 30
+    H2 <token> (284) 31
+    H3 <token> (285) 32
+    H4 <token> (286) 33
+    A <token> (287) 34
+    SPAN <token> (288) 35
+    P <token> (289) 36
+    TITLE <token> (290) 37
+    TEXTALIGN <token> (291) 27
+    COLOR <token> (292) 28
+    BACKGROUND_COLOR <token> (293) 29
+    STYLE <token> (294) 23
+    ITERABLE <token> (295) 9
+    ITERATE <token> (296) 10
+    ITERATOR_REF <token> (297) 24
+    ITERATE_STRING <token> (298)
 
 
 Nonterminals, with rules where they appear
 
-    $accept (40)
+    $accept (44)
         on left: 0
-    program <program> (41)
+    program <program> (45)
         on left: 1
         on right: 0
-    object <object> (42)
+    object <object> (46)
         on left: 2
-        on right: 1 12
-    pairList <pairList> (43)
-        on left: 3 4 5
-        on right: 2 5
-    pair <pair> (44)
-        on left: 6
-        on right: 4 5
-    key <value> (45)
-        on left: 7 8 9
-        on right: 6
-    value <value> (46)
-        on left: 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-        on right: 6 38 39
-    property <value> (47)
-        on left: 25 26 27
-        on right: 24
-    text <value> (48)
-        on left: 28 29 30 31 32 33 34 35
-        on right: 23
-    array <array> (49)
-        on left: 36
-        on right: 13
-    valueList <valueList> (50)
-        on left: 37 38 39
-        on right: 36 39
-    variableRef <varRef> (51)
-        on left: 40
+        on right: 1 13
+    pairList <pairList> (47)
+        on left: 3 4
+        on right: 2 4
+    pair <pair> (48)
+        on left: 5
+        on right: 3 4
+    key <value> (49)
+        on left: 6 7 8 9 10
+        on right: 5
+    value <value> (50)
+        on left: 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+        on right: 5 40 41
+    property <value> (51)
+        on left: 27 28 29
+        on right: 26
+    text <value> (52)
+        on left: 30 31 32 33 34 35 36 37
+        on right: 25
+    array <array> (53)
+        on left: 38
         on right: 14
+    valueList <valueList> (54)
+        on left: 39 40 41
+        on right: 38 41
+    variableRef <varRef> (55)
+        on left: 42
+        on right: 15
 
 
 State 0
@@ -159,22 +166,22 @@ State 1
 
     2 object: OPEN_BRACE . pairList CLOSE_BRACE
 
-    LOOP     shift, and go to state 4
-    TYPE     shift, and go to state 5
-    CONTENT  shift, and go to state 6
+    LOOP      shift, and go to state 4
+    TYPE      shift, and go to state 5
+    CONTENT   shift, and go to state 6
+    ITERABLE  shift, and go to state 7
+    ITERATE   shift, and go to state 8
 
-    $default  reduce using rule 3 (pairList)
-
-    pairList  go to state 7
-    pair      go to state 8
-    key       go to state 9
+    pairList  go to state 9
+    pair      go to state 10
+    key       go to state 11
 
 
 State 2
 
     0 $accept: program . $end
 
-    $end  shift, and go to state 10
+    $end  shift, and go to state 12
 
 
 State 3
@@ -186,423 +193,449 @@ State 3
 
 State 4
 
-    9 key: LOOP .
-
-    $default  reduce using rule 9 (key)
-
-
-State 5
-
-    7 key: TYPE .
-
-    $default  reduce using rule 7 (key)
-
-
-State 6
-
-    8 key: CONTENT .
+    8 key: LOOP .
 
     $default  reduce using rule 8 (key)
 
 
+State 5
+
+    6 key: TYPE .
+
+    $default  reduce using rule 6 (key)
+
+
+State 6
+
+    7 key: CONTENT .
+
+    $default  reduce using rule 7 (key)
+
+
 State 7
 
-    2 object: OPEN_BRACE pairList . CLOSE_BRACE
-    5 pairList: pairList . COMMA pair
+    9 key: ITERABLE .
 
-    CLOSE_BRACE  shift, and go to state 11
-    COMMA        shift, and go to state 12
+    $default  reduce using rule 9 (key)
 
 
 State 8
 
-    4 pairList: pair .
+   10 key: ITERATE .
 
-    $default  reduce using rule 4 (pairList)
+    $default  reduce using rule 10 (key)
 
 
 State 9
 
-    6 pair: key . COLON value
+    2 object: OPEN_BRACE pairList . CLOSE_BRACE
+    4 pairList: pairList . COMMA pair
 
-    COLON  shift, and go to state 13
+    CLOSE_BRACE  shift, and go to state 13
+    COMMA        shift, and go to state 14
 
 
 State 10
+
+    3 pairList: pair .
+
+    $default  reduce using rule 3 (pairList)
+
+
+State 11
+
+    5 pair: key . COLON value
+
+    COLON  shift, and go to state 15
+
+
+State 12
 
     0 $accept: program $end .
 
     $default  accept
 
 
-State 11
+State 13
 
     2 object: OPEN_BRACE pairList CLOSE_BRACE .
 
     $default  reduce using rule 2 (object)
 
 
-State 12
-
-    5 pairList: pairList COMMA . pair
-
-    LOOP     shift, and go to state 4
-    TYPE     shift, and go to state 5
-    CONTENT  shift, and go to state 6
-
-    pair  go to state 14
-    key   go to state 9
-
-
-State 13
-
-    6 pair: key COLON . value
-
-    OPEN_BRACE        shift, and go to state 1
-    OPEN_BRACKET      shift, and go to state 15
-    STRING            shift, and go to state 16
-    JSON_NULL         shift, and go to state 17
-    DOLLAR            shift, and go to state 18
-    DIV               shift, and go to state 19
-    VAR               shift, and go to state 20
-    IMG               shift, and go to state 21
-    SRC               shift, and go to state 22
-    ALT               shift, and go to state 23
-    BODY              shift, and go to state 24
-    REF               shift, and go to state 25
-    H1                shift, and go to state 26
-    H2                shift, and go to state 27
-    H3                shift, and go to state 28
-    H4                shift, and go to state 29
-    A                 shift, and go to state 30
-    SPAN              shift, and go to state 31
-    P                 shift, and go to state 32
-    TITLE             shift, and go to state 33
-    TEXTALIGN         shift, and go to state 34
-    COLOR             shift, and go to state 35
-    BACKGROUND_COLOR  shift, and go to state 36
-    STYLE             shift, and go to state 37
-
-    object       go to state 38
-    value        go to state 39
-    property     go to state 40
-    text         go to state 41
-    array        go to state 42
-    variableRef  go to state 43
-
-
 State 14
 
-    5 pairList: pairList COMMA pair .
+    4 pairList: pairList COMMA . pair
 
-    $default  reduce using rule 5 (pairList)
+    LOOP      shift, and go to state 4
+    TYPE      shift, and go to state 5
+    CONTENT   shift, and go to state 6
+    ITERABLE  shift, and go to state 7
+    ITERATE   shift, and go to state 8
+
+    pair  go to state 16
+    key   go to state 11
 
 
 State 15
 
-   36 array: OPEN_BRACKET . valueList CLOSE_BRACKET
+    5 pair: key COLON . value
 
     OPEN_BRACE        shift, and go to state 1
-    OPEN_BRACKET      shift, and go to state 15
-    STRING            shift, and go to state 16
-    JSON_NULL         shift, and go to state 17
-    DOLLAR            shift, and go to state 18
-    DIV               shift, and go to state 19
-    VAR               shift, and go to state 20
-    IMG               shift, and go to state 21
-    SRC               shift, and go to state 22
-    ALT               shift, and go to state 23
-    BODY              shift, and go to state 24
-    REF               shift, and go to state 25
-    H1                shift, and go to state 26
-    H2                shift, and go to state 27
-    H3                shift, and go to state 28
-    H4                shift, and go to state 29
-    A                 shift, and go to state 30
-    SPAN              shift, and go to state 31
-    P                 shift, and go to state 32
-    TITLE             shift, and go to state 33
-    TEXTALIGN         shift, and go to state 34
-    COLOR             shift, and go to state 35
-    BACKGROUND_COLOR  shift, and go to state 36
-    STYLE             shift, and go to state 37
+    OPEN_BRACKET      shift, and go to state 17
+    STRING            shift, and go to state 18
+    JSON_NULL         shift, and go to state 19
+    DOLLAR            shift, and go to state 20
+    DIV               shift, and go to state 21
+    VAR               shift, and go to state 22
+    IMG               shift, and go to state 23
+    SRC               shift, and go to state 24
+    ALT               shift, and go to state 25
+    BODY              shift, and go to state 26
+    REF               shift, and go to state 27
+    H1                shift, and go to state 28
+    H2                shift, and go to state 29
+    H3                shift, and go to state 30
+    H4                shift, and go to state 31
+    A                 shift, and go to state 32
+    SPAN              shift, and go to state 33
+    P                 shift, and go to state 34
+    TITLE             shift, and go to state 35
+    TEXTALIGN         shift, and go to state 36
+    COLOR             shift, and go to state 37
+    BACKGROUND_COLOR  shift, and go to state 38
+    STYLE             shift, and go to state 39
+    ITERATOR_REF      shift, and go to state 40
 
-    $default  reduce using rule 37 (valueList)
-
-    object       go to state 38
-    value        go to state 44
-    property     go to state 40
-    text         go to state 41
-    array        go to state 42
-    valueList    go to state 45
-    variableRef  go to state 43
+    object       go to state 41
+    value        go to state 42
+    property     go to state 43
+    text         go to state 44
+    array        go to state 45
+    variableRef  go to state 46
 
 
 State 16
 
-   10 value: STRING .
+    4 pairList: pairList COMMA pair .
 
-    $default  reduce using rule 10 (value)
+    $default  reduce using rule 4 (pairList)
 
 
 State 17
 
-   11 value: JSON_NULL .
+   38 array: OPEN_BRACKET . valueList CLOSE_BRACKET
 
-    $default  reduce using rule 11 (value)
+    OPEN_BRACE        shift, and go to state 1
+    OPEN_BRACKET      shift, and go to state 17
+    STRING            shift, and go to state 18
+    JSON_NULL         shift, and go to state 19
+    DOLLAR            shift, and go to state 20
+    DIV               shift, and go to state 21
+    VAR               shift, and go to state 22
+    IMG               shift, and go to state 23
+    SRC               shift, and go to state 24
+    ALT               shift, and go to state 25
+    BODY              shift, and go to state 26
+    REF               shift, and go to state 27
+    H1                shift, and go to state 28
+    H2                shift, and go to state 29
+    H3                shift, and go to state 30
+    H4                shift, and go to state 31
+    A                 shift, and go to state 32
+    SPAN              shift, and go to state 33
+    P                 shift, and go to state 34
+    TITLE             shift, and go to state 35
+    TEXTALIGN         shift, and go to state 36
+    COLOR             shift, and go to state 37
+    BACKGROUND_COLOR  shift, and go to state 38
+    STYLE             shift, and go to state 39
+    ITERATOR_REF      shift, and go to state 40
+
+    $default  reduce using rule 39 (valueList)
+
+    object       go to state 41
+    value        go to state 47
+    property     go to state 43
+    text         go to state 44
+    array        go to state 45
+    valueList    go to state 48
+    variableRef  go to state 46
 
 
 State 18
 
-   40 variableRef: DOLLAR . IDENTIFIER
+   11 value: STRING .
 
-    IDENTIFIER  shift, and go to state 46
+    $default  reduce using rule 11 (value)
 
 
 State 19
 
-   15 value: DIV .
+   12 value: JSON_NULL .
 
-    $default  reduce using rule 15 (value)
+    $default  reduce using rule 12 (value)
 
 
 State 20
 
-   16 value: VAR .
+   42 variableRef: DOLLAR . IDENTIFIER
 
-    $default  reduce using rule 16 (value)
+    IDENTIFIER  shift, and go to state 49
 
 
 State 21
 
-   17 value: IMG .
+   16 value: DIV .
 
-    $default  reduce using rule 17 (value)
+    $default  reduce using rule 16 (value)
 
 
 State 22
 
-   18 value: SRC .
+   17 value: VAR .
 
-    $default  reduce using rule 18 (value)
+    $default  reduce using rule 17 (value)
 
 
 State 23
 
-   19 value: ALT .
+   18 value: IMG .
 
-    $default  reduce using rule 19 (value)
+    $default  reduce using rule 18 (value)
 
 
 State 24
 
-   20 value: BODY .
+   19 value: SRC .
 
-    $default  reduce using rule 20 (value)
+    $default  reduce using rule 19 (value)
 
 
 State 25
 
-   21 value: REF .
+   20 value: ALT .
 
-    $default  reduce using rule 21 (value)
+    $default  reduce using rule 20 (value)
 
 
 State 26
 
-   28 text: H1 .
+   21 value: BODY .
 
-    $default  reduce using rule 28 (text)
+    $default  reduce using rule 21 (value)
 
 
 State 27
 
-   29 text: H2 .
+   22 value: REF .
 
-    $default  reduce using rule 29 (text)
+    $default  reduce using rule 22 (value)
 
 
 State 28
 
-   30 text: H3 .
+   30 text: H1 .
 
     $default  reduce using rule 30 (text)
 
 
 State 29
 
-   31 text: H4 .
+   31 text: H2 .
 
     $default  reduce using rule 31 (text)
 
 
 State 30
 
-   32 text: A .
+   32 text: H3 .
 
     $default  reduce using rule 32 (text)
 
 
 State 31
 
-   33 text: SPAN .
+   33 text: H4 .
 
     $default  reduce using rule 33 (text)
 
 
 State 32
 
-   34 text: P .
+   34 text: A .
 
     $default  reduce using rule 34 (text)
 
 
 State 33
 
-   35 text: TITLE .
+   35 text: SPAN .
 
     $default  reduce using rule 35 (text)
 
 
 State 34
 
-   25 property: TEXTALIGN .
+   36 text: P .
 
-    $default  reduce using rule 25 (property)
+    $default  reduce using rule 36 (text)
 
 
 State 35
 
-   26 property: COLOR .
+   37 text: TITLE .
 
-    $default  reduce using rule 26 (property)
+    $default  reduce using rule 37 (text)
 
 
 State 36
 
-   27 property: BACKGROUND_COLOR .
+   27 property: TEXTALIGN .
 
     $default  reduce using rule 27 (property)
 
 
 State 37
 
-   22 value: STYLE .
+   28 property: COLOR .
 
-    $default  reduce using rule 22 (value)
+    $default  reduce using rule 28 (property)
 
 
 State 38
 
-   12 value: object .
+   29 property: BACKGROUND_COLOR .
 
-    $default  reduce using rule 12 (value)
+    $default  reduce using rule 29 (property)
 
 
 State 39
 
-    6 pair: key COLON value .
+   23 value: STYLE .
 
-    $default  reduce using rule 6 (pair)
+    $default  reduce using rule 23 (value)
 
 
 State 40
 
-   24 value: property .
+   24 value: ITERATOR_REF .
 
     $default  reduce using rule 24 (value)
 
 
 State 41
 
-   23 value: text .
-
-    $default  reduce using rule 23 (value)
-
-
-State 42
-
-   13 value: array .
+   13 value: object .
 
     $default  reduce using rule 13 (value)
 
 
+State 42
+
+    5 pair: key COLON value .
+
+    $default  reduce using rule 5 (pair)
+
+
 State 43
 
-   14 value: variableRef .
+   26 value: property .
 
-    $default  reduce using rule 14 (value)
+    $default  reduce using rule 26 (value)
 
 
 State 44
 
-   38 valueList: value .
+   25 value: text .
 
-    $default  reduce using rule 38 (valueList)
+    $default  reduce using rule 25 (value)
 
 
 State 45
 
-   36 array: OPEN_BRACKET valueList . CLOSE_BRACKET
-   39 valueList: valueList . COMMA value
+   14 value: array .
 
-    CLOSE_BRACKET  shift, and go to state 47
-    COMMA          shift, and go to state 48
+    $default  reduce using rule 14 (value)
 
 
 State 46
 
-   40 variableRef: DOLLAR IDENTIFIER .
+   15 value: variableRef .
 
-    $default  reduce using rule 40 (variableRef)
+    $default  reduce using rule 15 (value)
 
 
 State 47
 
-   36 array: OPEN_BRACKET valueList CLOSE_BRACKET .
+   40 valueList: value .
 
-    $default  reduce using rule 36 (array)
+    $default  reduce using rule 40 (valueList)
 
 
 State 48
 
-   39 valueList: valueList COMMA . value
+   38 array: OPEN_BRACKET valueList . CLOSE_BRACKET
+   41 valueList: valueList . COMMA value
 
-    OPEN_BRACE        shift, and go to state 1
-    OPEN_BRACKET      shift, and go to state 15
-    STRING            shift, and go to state 16
-    JSON_NULL         shift, and go to state 17
-    DOLLAR            shift, and go to state 18
-    DIV               shift, and go to state 19
-    VAR               shift, and go to state 20
-    IMG               shift, and go to state 21
-    SRC               shift, and go to state 22
-    ALT               shift, and go to state 23
-    BODY              shift, and go to state 24
-    REF               shift, and go to state 25
-    H1                shift, and go to state 26
-    H2                shift, and go to state 27
-    H3                shift, and go to state 28
-    H4                shift, and go to state 29
-    A                 shift, and go to state 30
-    SPAN              shift, and go to state 31
-    P                 shift, and go to state 32
-    TITLE             shift, and go to state 33
-    TEXTALIGN         shift, and go to state 34
-    COLOR             shift, and go to state 35
-    BACKGROUND_COLOR  shift, and go to state 36
-    STYLE             shift, and go to state 37
-
-    object       go to state 38
-    value        go to state 49
-    property     go to state 40
-    text         go to state 41
-    array        go to state 42
-    variableRef  go to state 43
+    CLOSE_BRACKET  shift, and go to state 50
+    COMMA          shift, and go to state 51
 
 
 State 49
 
-   39 valueList: valueList COMMA value .
+   42 variableRef: DOLLAR IDENTIFIER .
 
-    $default  reduce using rule 39 (valueList)
+    $default  reduce using rule 42 (variableRef)
+
+
+State 50
+
+   38 array: OPEN_BRACKET valueList CLOSE_BRACKET .
+
+    $default  reduce using rule 38 (array)
+
+
+State 51
+
+   41 valueList: valueList COMMA . value
+
+    OPEN_BRACE        shift, and go to state 1
+    OPEN_BRACKET      shift, and go to state 17
+    STRING            shift, and go to state 18
+    JSON_NULL         shift, and go to state 19
+    DOLLAR            shift, and go to state 20
+    DIV               shift, and go to state 21
+    VAR               shift, and go to state 22
+    IMG               shift, and go to state 23
+    SRC               shift, and go to state 24
+    ALT               shift, and go to state 25
+    BODY              shift, and go to state 26
+    REF               shift, and go to state 27
+    H1                shift, and go to state 28
+    H2                shift, and go to state 29
+    H3                shift, and go to state 30
+    H4                shift, and go to state 31
+    A                 shift, and go to state 32
+    SPAN              shift, and go to state 33
+    P                 shift, and go to state 34
+    TITLE             shift, and go to state 35
+    TEXTALIGN         shift, and go to state 36
+    COLOR             shift, and go to state 37
+    BACKGROUND_COLOR  shift, and go to state 38
+    STYLE             shift, and go to state 39
+    ITERATOR_REF      shift, and go to state 40
+
+    object       go to state 41
+    value        go to state 52
+    property     go to state 43
+    text         go to state 44
+    array        go to state 45
+    variableRef  go to state 46
+
+
+State 52
+
+   41 valueList: valueList COMMA value .
+
+    $default  reduce using rule 41 (valueList)

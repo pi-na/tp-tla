@@ -98,8 +98,6 @@ struct VarRef {
  */
 void releaseProgram(Program * program);
 void releaseObject(Object * object);
-void releaseEntryList(EntryList * entryList);
-void releaseEntry(Entry * entry);
 
 // Destructores para nuevas estructuras
 void releasePairList(PairList * pairList);
