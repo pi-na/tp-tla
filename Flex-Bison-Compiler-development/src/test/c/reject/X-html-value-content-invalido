@@ -1,0 +1,11 @@
+/* Todvia no chequeamos validez de la combinacion clave-valor */
+{
+  "type": "html",
+  "content": {
+      "type": "p",
+      "content": {
+          "type": "p",
+          "content": "asdnhjbdhsbhfbdhjsfgdhjsfgbdsjfh"
+      }
+  }
+}
