@@ -5,7 +5,10 @@
         "type": "body",
         "content": {
             "type": "div",
-            "content": "hohla"
+            "content": {
+                "type": "p",
+                "content": "hohla"
+            }
         }
     }
   ]
