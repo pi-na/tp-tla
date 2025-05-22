@@ -85,7 +85,8 @@
 %token <token> ITERATE
 %token <token> ITERATOR_REF
 %token <token> ITERATE_STRING
-
+%token <token> UL
+%token <token> LI
 
 /** Non-terminals. */
 %type <program> program
@@ -161,6 +162,8 @@ text: H1													  { $$ = TokenValueSemanticAction($1); }
 	| SPAN													  { $$ = TokenValueSemanticAction($1); }
 	| P														  { $$ = TokenValueSemanticAction($1); }
 	| TITLE													  { $$ = TokenValueSemanticAction($1); }
+	| UL													  { $$ = TokenValueSemanticAction($1); }
+	| LI													  { $$ = TokenValueSemanticAction($1); }
 	;
 	
 array: OPEN_BRACKET valueList CLOSE_BRACKET                   { $$ = ArraySemanticAction($2); }

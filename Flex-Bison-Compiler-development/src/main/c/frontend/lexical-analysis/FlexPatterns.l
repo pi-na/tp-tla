@@ -58,6 +58,8 @@ $iterate                              { return KeywordLexemeAction(createLexical
 \"h4\"                                { return ValueLexemeAction(createLexicalAnalyzerContext(), H4); }
 \"a\"                                 { return ValueLexemeAction(createLexicalAnalyzerContext(), A); }
 \"span\"                              { return ValueLexemeAction(createLexicalAnalyzerContext(), SPAN); }
+\"ul\"                                { return ValueLexemeAction(createLexicalAnalyzerContext(), UL); }
+\"li\"                                { return ValueLexemeAction(createLexicalAnalyzerContext(), LI); }
 \"p\"                                 { return ValueLexemeAction(createLexicalAnalyzerContext(), P); }
 \"title\"                             { return ValueLexemeAction(createLexicalAnalyzerContext(), TITLE); }
 \"body\"                              { return ValueLexemeAction(createLexicalAnalyzerContext(), BODY); }
