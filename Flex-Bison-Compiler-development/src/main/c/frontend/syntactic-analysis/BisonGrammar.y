@@ -87,6 +87,10 @@
 %token <token> ITERATE_STRING
 %token <token> UL
 %token <token> LI
+%token <token> ID
+%token <token> CLASS
+%token <token> WIDTH
+%token <token> HEIGHT
 %token <token> WIDTH HEIGHT
 %token <token> MARGIN MARGIN_TOP MARGIN_RIGHT MARGIN_BOTTOM MARGIN_LEFT
 %token <token> PADDING PADDING_TOP PADDING_RIGHT PADDING_BOTTOM PADDING_LEFT
@@ -129,13 +133,19 @@ pairList: pair                                                     { $$ = single
 pair: key COLON value                                      { $$ = PairSemanticAction($1, $3); }
 	;
 
-/** TODO: SON KEYWORD!*/
-key: TYPE														{ $$ = TokenValueSemanticAction($1); }
-	| CONTENT													{ $$ = TokenValueSemanticAction($1); }
-	| LOOP														{ $$ = TokenValueSemanticAction($1); }
-	| ITERABLE													{ $$ = TokenValueSemanticAction($1); }
-	| ITERATE													{ $$ = TokenValueSemanticAction($1); }
+key: TYPE													{ $$ = TokenValueSemanticAction($1); }
+	| CONTENT												{ $$ = TokenValueSemanticAction($1); }
+	| LOOP													{ $$ = TokenValueSemanticAction($1); }
+	| ITERABLE												{ $$ = TokenValueSemanticAction($1); }
+	| ITERATE												{ $$ = TokenValueSemanticAction($1); }
+	| ID													{ $$ = TokenValueSemanticAction($1); }
+	| CLASS													{ $$ = TokenValueSemanticAction($1); }
+	| WIDTH													{ $$ = TokenValueSemanticAction($1); }
+	| HEIGHT												{ $$ = TokenValueSemanticAction($1); }
+	| SRC													{ $$ = TokenValueSemanticAction($1); }
+	| ALT													{ $$ = TokenValueSemanticAction($1); }
 	| STYLE														{ $$ = TokenValueSemanticAction($1); }
+	| REF													{ $$ = TokenValueSemanticAction($1); }
 	;
 
 value: STRING                                                 	{ $$ = StringValueSemanticAction($1); }
@@ -146,10 +156,9 @@ value: STRING                                                 	{ $$ = StringValu
 	| DIV 														{ $$ = TokenValueSemanticAction($1); }
 	| VAR														{ $$ = TokenValueSemanticAction($1); }
 	| IMG														{ $$ = TokenValueSemanticAction($1); }
-	| SRC														{ $$ = TokenValueSemanticAction($1); }
-	| ALT														{ $$ = TokenValueSemanticAction($1); }
 	| BODY														{ $$ = TokenValueSemanticAction($1); }
 	| REF														{ $$ = TokenValueSemanticAction($1); }
+	| STYLE														{ $$ = TokenValueSemanticAction($1); }
 	| ITERATOR_REF												{ $$ = TokenValueSemanticAction($1); }
 	| text														{ $$ = $1; }
 	| property													{ $$ = $1; }
@@ -200,7 +209,6 @@ text: H1													  { $$ = TokenValueSemanticAction($1); }
 	| UL													  { $$ = TokenValueSemanticAction($1); }
 	| LI													  { $$ = TokenValueSemanticAction($1); }
 	;
-	
 array: OPEN_BRACKET valueList CLOSE_BRACKET                   { $$ = ArraySemanticAction($2); }
     ;
 

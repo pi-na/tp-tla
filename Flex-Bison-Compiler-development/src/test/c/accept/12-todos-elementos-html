@@ -32,8 +32,8 @@
             },
             {
               "type": "a",
-              "href": "https://ejemplo.com",
-              "content": "Enlace externo"
+              "ref": "Seccion2",
+              "content": "Ir a sección 2"
             },
             {
               "type": "img",
