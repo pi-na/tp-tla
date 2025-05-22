@@ -16,11 +16,6 @@
           "type": "a",
           "ref": "seccion1",
           "content": "Ir a sección 1"
-        },
-        {
-          "type": "a",
-          "ext-ref": "https://www.ejemplo.com",
-          "content": "Enlace externo"
         }
       ]
     }

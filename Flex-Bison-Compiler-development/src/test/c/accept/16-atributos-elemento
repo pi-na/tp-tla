@@ -5,9 +5,7 @@
     "content": [
       {
         "type": "a",
-        "href": "https://ejemplo.com",
-        "target": "_blank",
-        "class": "enlace-externo",
+        "ref": "Seccion2",
         "content": "Enlace con múltiples atributos"
       },
       {
