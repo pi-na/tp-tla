@@ -1,8 +1,0 @@
-{
-  "type": "html",
-  "content": {
-    "type": "div",
-    "content": "Primer contenido",
-    "content": "Segundo contenido duplicado"
-  }
-} 

@@ -1,7 +1,0 @@
-{
-  "type": "html",
-  "content": {
-    "type": "ul",
-    "content": "Los elementos de lista deben estar dentro de elementos li, no como texto directo"
-  }
-} 

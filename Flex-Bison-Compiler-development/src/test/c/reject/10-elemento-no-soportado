@@ -1,7 +1,7 @@
 {
   "type": "html",
   "content": {
-    "type": "video",
+    "video": "/src/video.mp4",
     "content": "Video no soportado"
   }
 } 
