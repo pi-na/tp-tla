@@ -101,7 +101,6 @@ $iterate                              { return KeywordLexemeAction(createLexical
 <STRING>{UNICODE}                   { UnicodeCharacterStringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>[^\\"]+                     { StringContentLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>\\                          { InvalidStringEscapeLexemeAction(createLexicalAnalyzerContext()); }
-<STRING>.                           { StringContentLexemeAction(createLexicalAnalyzerContext()); }
 
 {IDENTIFIER}                        { return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 
@@ -118,7 +117,7 @@ $iterate                              { return KeywordLexemeAction(createLexical
 ","                                 { return CommaLexemeAction(createLexicalAnalyzerContext()); }
 ";"                                 { return SemiLexemeAction(createLexicalAnalyzerContext()); }
 
-"null"                              { return NullLexemeAction(createLexicalAnalyzerContext()); }
+\"null\"                              { return NullLexemeAction(createLexicalAnalyzerContext()); }
 
 "$"                                 { return OperatorLexemeAction(createLexicalAnalyzerContext(), DOLLAR); }
 
