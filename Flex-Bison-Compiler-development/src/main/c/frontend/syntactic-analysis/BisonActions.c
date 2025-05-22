@@ -158,12 +158,19 @@ Keyword * KeywordSemanticAction(Token type) {
 	return keyword;
 }
 
-/**por que value es char???????????????? */
 Value * StringValueSemanticAction(char * value) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Value * val = calloc(1, sizeof(Value));
 	val->type = STRING_VALUE;
 	val->data.stringValue = value;
+	return val;
+}
+
+Value * TokenValueSemanticAction(Token type) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Value * val = calloc(1, sizeof(Value));
+	val->type = TOKEN_VALUE;
+	val->data.tokenValue = type;
 	return val;
 }
 
@@ -187,14 +194,6 @@ Value * ArrayValueSemanticAction(Array * array) {
 	Value * val = calloc(1, sizeof(Value));
 	val->type = ARRAY_VALUE;
 	val->data.arrayValue = array;
-	return val;
-}
-
-Value * LoopValueSemanticAction(Loop * loop) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Value * val = calloc(1, sizeof(Value));
-	val->type = LOOP_VALUE;
-	val->data.loopValue = loop;
 	return val;
 }
 
@@ -239,14 +238,6 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 	return valueList;
 }
 
-Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Loop * loop = calloc(1, sizeof(Loop));
-	loop->iteratorName = iteratorName;
-	loop->iterable = iterable;
-	loop->body = body;
-	return loop;
-}
 
 VarRef * VariableRefSemanticAction(char * name) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);

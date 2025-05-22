@@ -48,6 +48,7 @@ Token NullLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 // Palabras clave
 Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
+Token ValueLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 Token OperatorLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
 
 // Identificadores

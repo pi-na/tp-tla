@@ -89,7 +89,7 @@ void releasePair(Pair * pair) {
     
     // Liberar la clave
     if (pair->key != NULL) {
-        free(pair->key);
+        releaseKeyword(pair->key);
     }
     
     // Liberar el valor
@@ -99,6 +99,14 @@ void releasePair(Pair * pair) {
     
     // Liberar el par
     free(pair);
+}
+
+void releaseKeyword(Keyword * keyword) {
+    logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+    if (keyword == NULL) {
+        return;
+    }
+    free(keyword);
 }
 
 void releaseValue(Value * value) {
@@ -122,11 +130,6 @@ void releaseValue(Value * value) {
         case ARRAY_VALUE:
             if (value->data.arrayValue != NULL) {
                 releaseArray(value->data.arrayValue);
-            }
-            break;
-        case LOOP_VALUE:
-            if (value->data.loopValue != NULL) {
-                releaseLoop(value->data.loopValue);
             }
             break;
         case VAR_REF_VALUE:
@@ -176,31 +179,6 @@ void releaseValueList(ValueList * valueList) {
     
     // Liberar el nodo actual
     free(valueList);
-}
-
-void releaseLoop(Loop * loop) {
-    logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-    if (loop == NULL) {
-        return;
-    }
-    
-    // Liberar el nombre del iterador
-    if (loop->iteratorName != NULL) {
-        free(loop->iteratorName);
-    }
-    
-    // Liberar el objeto iterable
-    if (loop->iterable != NULL) {
-        releaseObject(loop->iterable);
-    }
-    
-    // Liberar el cuerpo
-    if (loop->body != NULL) {
-        releaseObject(loop->body);
-    }
-    
-    // Liberar el bucle
-    free(loop);
 }
 
 void releaseVarRef(VarRef * varRef) {

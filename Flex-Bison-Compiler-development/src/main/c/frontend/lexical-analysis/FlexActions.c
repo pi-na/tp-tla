@@ -195,6 +195,15 @@ Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token
 	return token;
 }
 
+// ----- VALUES ----- //
+
+Token ValueLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token) {
+	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
+	lexicalAnalyzerContext->semanticValue->token = token;
+	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
+	return token;
+}
+
 // ----- Operadores ----- //
 
 Token OperatorLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token) {

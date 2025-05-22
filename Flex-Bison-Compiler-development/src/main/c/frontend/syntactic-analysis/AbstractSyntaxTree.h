@@ -26,7 +26,6 @@ typedef struct Value Value;
 typedef struct Array Array;
 typedef struct Pair Pair;
 typedef struct PairList PairList;
-typedef struct Loop Loop;
 typedef struct VarRef VarRef;
 
 /**
@@ -34,10 +33,10 @@ typedef struct VarRef VarRef;
  */
 typedef enum {
     STRING_VALUE,
+	TOKEN_VALUE,
     NULL_VALUE,
     OBJECT_VALUE,
     ARRAY_VALUE,
-    LOOP_VALUE,
     VAR_REF_VALUE
 } ValueType;
 
@@ -85,8 +84,8 @@ struct Value {
 		boolean booleanValue;
 		Object * objectValue;
 		Array * arrayValue;
-		Loop * loopValue;
 		VarRef * varRefValue;
+		Token tokenValue;
 	} data;
 };
 
@@ -97,12 +96,6 @@ struct Array {
 struct ValueList {
 	Value * value;
 	ValueList * next;
-};
-
-struct Loop {
-	char * iteratorName;
-	Object * iterable;
-	Object * body;
 };
 
 struct VarRef {
@@ -120,10 +113,10 @@ void releaseEntry(Entry * entry);
 // Destructores para nuevas estructuras
 void releasePairList(PairList * pairList);
 void releasePair(Pair * pair);
+void releaseKeyword(Keyword * keyword);
 void releaseValue(Value * value);
 void releaseArray(Array * array);
 void releaseValueList(ValueList * valueList);
-void releaseLoop(Loop * loop);
 void releaseVarRef(VarRef * varRef);
 
 #endif

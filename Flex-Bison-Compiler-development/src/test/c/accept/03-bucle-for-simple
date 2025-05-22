@@ -6,12 +6,8 @@
       "type": "ul",
       "content": {
         "loop": {
-          "iteratorName": "item",
-          "iterable": {
-            "type": "array",
-            "items": ["Item 1", "Item 2", "Item 3"]
-          },
-          "body": {
+          "iterable": ["Item 1", "Item 2", "Item 3"],
+          "iterate": {
             "type": "li",
             "content": {"var": "item"}
           }
