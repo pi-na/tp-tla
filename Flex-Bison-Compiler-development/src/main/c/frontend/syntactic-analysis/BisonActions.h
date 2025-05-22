@@ -27,7 +27,8 @@ Entry * emptyEntryAction();
 PairList * emptyPairListAction();
 PairList * singlePairListSemanticAction(Pair * pair);
 PairList * pairListSemanticAction(PairList * pairList, Pair * newPair);
-Pair * PairSemanticAction(char * key, Value * value);
+Pair * PairSemanticAction(Keyword * key, Value * value);
+Keyword * KeywordSemanticAction(Token type);
 
 Value * StringValueSemanticAction(char * value);
 Value * NullValueSemanticAction();
@@ -35,7 +36,6 @@ Value * ObjectValueSemanticAction(Object * object);
 Value * ArrayValueSemanticAction(Array * array);
 Value * LoopValueSemanticAction(Loop * loop);
 Value * VariableRefValueSemanticAction(VarRef * varRef);
-Value * ElementValueSemanticAction(Element * element);
 
 Array * ArraySemanticAction(ValueList * values);
 ValueList * emptyValueListAction();
@@ -44,10 +44,5 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue);
 
 Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body);
 VarRef * VariableRefSemanticAction(char * name);
-
-AttributeList * emptyAttributeListAction();
-AttributeList * singleAttributeListSemanticAction(Attribute * attribute);
-AttributeList * attributeListSemanticAction(AttributeList * attributeList, Attribute * newAttribute);
-Attribute * AttributeSemanticAction(char * name, Value * value);
 
 #endif

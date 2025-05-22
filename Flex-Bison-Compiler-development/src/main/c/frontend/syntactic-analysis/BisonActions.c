@@ -117,30 +117,6 @@ Object * ObjectSemanticAction(PairList * pairs) {
 	return object;
 }
 
-EntryList * entryListSemanticAction(EntryList * entryList, Entry * newEntry) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	while(entryList->next != NULL) {
-		entryList = entryList->next;
-	}
-	entryList->next = singleEntryListSemanticAction(newEntry);
-	return entryList;
-}
-
-EntryList * singleEntryListSemanticAction(Entry * entry) {
-	EntryList * newEntryList = calloc(1, sizeof(EntryList));
-	newEntryList->entry = entry;
-	newEntryList->next = NULL;
-	return newEntryList;
-}
-
-Entry * emptyEntryAction() {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Entry * entry = calloc(1, sizeof(Entry));
-	return entry;
-}
-
-// ----- Implementación de las nuevas acciones semánticas ----- //
-
 PairList * emptyPairListAction() {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	return NULL;
@@ -167,7 +143,7 @@ PairList * pairListSemanticAction(PairList * pairList, Pair * newPair) {
 	return pairList;
 }
 
-Pair * PairSemanticAction(char * key, Value * value) {
+Pair * PairSemanticAction(Keyword * key, Value * value) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Pair * pair = calloc(1, sizeof(Pair));
 	pair->key = key;
@@ -175,6 +151,14 @@ Pair * PairSemanticAction(char * key, Value * value) {
 	return pair;
 }
 
+Keyword * KeywordSemanticAction(Token type) {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Keyword * keyword = calloc(1, sizeof(Keyword));
+	keyword->type = type;
+	return keyword;
+}
+
+/**por que value es char???????????????? */
 Value * StringValueSemanticAction(char * value) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Value * val = calloc(1, sizeof(Value));
@@ -219,14 +203,6 @@ Value * VariableRefValueSemanticAction(VarRef * varRef) {
 	Value * val = calloc(1, sizeof(Value));
 	val->type = VAR_REF_VALUE;
 	val->data.varRefValue = varRef;
-	return val;
-}
-
-Value * ElementValueSemanticAction(Element * element) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Value * val = calloc(1, sizeof(Value));
-	val->type = ELEMENT_VALUE;
-	val->data.elementValue = element;
 	return val;
 }
 
@@ -279,71 +255,5 @@ VarRef * VariableRefSemanticAction(char * name) {
 	return varRef;
 }
 
-AttributeList * emptyAttributeListAction() {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	return NULL;
-}
-
-AttributeList * singleAttributeListSemanticAction(Attribute * attribute) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	AttributeList * newAttributeList = calloc(1, sizeof(AttributeList));
-	newAttributeList->attribute = attribute;
-	newAttributeList->next = NULL;
-	return newAttributeList;
-}
-
-AttributeList * attributeListSemanticAction(AttributeList * attributeList, Attribute * newAttribute) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	if (attributeList == NULL) {
-		return singleAttributeListSemanticAction(newAttribute);
-	}
-	AttributeList * current = attributeList;
-	while (current->next != NULL) {
-		current = current->next;
-	}
-	current->next = singleAttributeListSemanticAction(newAttribute);
-	return attributeList;
-}
-
-Attribute * AttributeSemanticAction(char * name, Value * value) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Attribute * attribute = calloc(1, sizeof(Attribute));
-	attribute->name = name;
-	attribute->value = value;
-	return attribute;
-}
-
-Element * ElementSemanticAction(Object * object) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Element * element = calloc(1, sizeof(Element));
-	// Extraer el primer par como tag y el resto como atributos y/o contenido
-	PairList * currentPair = object->pairs;
-	char * type = NULL;
-	Value * content = NULL;
-	AttributeList * attributes = NULL;
-	while (currentPair != NULL) {
-		// No usar strcmp, solo tomar el primer par como type, el segundo como content, el resto como atributos
-		if (type == NULL && currentPair->pair != NULL) {
-			type = currentPair->pair->value && currentPair->pair->value->type == STRING_VALUE ? currentPair->pair->value->data.stringValue : NULL;
-		} else if (content == NULL && currentPair->pair != NULL) {
-			content = currentPair->pair->value;
-		} else if (currentPair->pair != NULL) {
-			attributes = attributeListSemanticAction(attributes, AttributeSemanticAction(currentPair->pair->key, currentPair->pair->value));
-		}
-		currentPair = currentPair->next;
-	}
-	element->tag = type;
-	element->attributes = attributes;
-	if (content != NULL) {
-		if (content->type == ARRAY_VALUE) {
-			element->children = content->data.arrayValue->values;
-		} else {
-			element->children = singleValueListSemanticAction(content);
-		}
-	} else {
-		element->children = NULL;
-	}
-	return element;
-}
 
 

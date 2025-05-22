@@ -12,7 +12,6 @@
 	/** Terminals. */
 	Token token;
 	char * string;
-	int integer;
 	double floating;
 	boolean boolean;
 
@@ -20,7 +19,6 @@
 	Program * program;
 	Object * object;
 
-	// Nuevos nodos del AST
 	ValueList * valueList;
 	Value * value;
 	Array * array;
@@ -28,9 +26,7 @@
 	PairList * pairList;
 	Loop * loop;
 	VarRef * varRef;
-	AttributeList * attributeList;
-	Attribute * attribute;
-	Element * element;
+	Keyword * keyword;
 }
 
 /**
@@ -48,8 +44,6 @@
 %destructor { releasePairList($$); } <pairList>
 %destructor { releaseLoop($$); } <loop>
 %destructor { releaseVarRef($$); } <varRef>
-%destructor { releaseAttributeList($$); } <attributeList>
-%destructor { releaseAttribute($$); } <attribute>
 
 /** Terminals. */
 %token <token> CLOSE_PARENTHESIS
@@ -65,10 +59,30 @@
 %token <token> IN
 %token <string> STRING
 %token <string> IDENTIFIER
-%token <floating> FLOAT
 %token <token> JSON_NULL
 %token <token> DOLLAR
 %token <token> UNKNOWN
+%token <token> TYPE
+%token <token> CONTENT
+%token <token> DIV
+%token <token> VAR
+%token <token> IMG
+%token <token> SRC
+%token <token> ALT
+%token <token> BODY
+%token <token> REF
+%token <token> H1
+%token <token> H2
+%token <token> H3
+%token <token> H4
+%token <token> A
+%token <token> SPAN
+%token <token> P
+%token <token> TITLE
+%token <token> TEXTALIGN
+%token <token> COLOR
+%token <token> BACKGROUND_COLOR
+%token <token> STYLE
 
 /** Non-terminals. */
 %type <program> program
@@ -80,8 +94,9 @@
 %type <valueList> valueList
 %type <loop> loop
 %type <varRef> variableRef
-%type <attributeList> attributeList
-%type <attribute> attribute
+%type <keyword> text
+%type <keyword> property
+%type <keyword> key
 
 %%
 
@@ -105,7 +120,36 @@ pairList: %empty                                               { $$ = emptyPairL
 pair: key COLON value                                      { $$ = PairSemanticAction($1, $3); }
 	;
 
-key: 
+key: TYPE													{ $$ = KeywordSemanticAction($1); }
+	| CONTENT												{ $$ = KeywordSemanticAction($1); }
+	| DIV 													{ $$ = KeywordSemanticAction($1); }
+	| VAR													{ $$ = KeywordSemanticAction($1); }
+	| IMG													{ $$ = KeywordSemanticAction($1); }
+	| SRC													{ $$ = KeywordSemanticAction($1); }
+	| ALT													{ $$ = KeywordSemanticAction($1); }
+	| BODY													{ $$ = KeywordSemanticAction($1); }
+	| REF													{ $$ = KeywordSemanticAction($1); }
+	| STYLE													{ $$ = KeywordSemanticAction($1); }
+	| text													{ $$ = $1; }
+	| property												{ $$ = $1; }
+	;
+
+property: TEXTALIGN											{ $$ = KeywordSemanticAction($1); }
+	| COLOR													{ $$ = KeywordSemanticAction($1); }
+	| BACKGROUND_COLOR										{ $$ = KeywordSemanticAction($1); }
+	;
+
+/** TODO maybe style lleva su propia produccion*/
+
+text: H1													  { $$ = KeywordSemanticAction($1); }
+	| H2													  { $$ = KeywordSemanticAction($1); }
+	| H3													  { $$ = KeywordSemanticAction($1); }
+	| H4													  { $$ = KeywordSemanticAction($1); }
+	| A														  { $$ = KeywordSemanticAction($1); }
+	| SPAN													  { $$ = KeywordSemanticAction($1); }
+	| P														  { $$ = KeywordSemanticAction($1); }
+	| TITLE													  { $$ = KeywordSemanticAction($1); }
+	;
 
 value: STRING                                                 { $$ = StringValueSemanticAction($1); }
     | JSON_NULL                                               { $$ = NullValueSemanticAction(); }

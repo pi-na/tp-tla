@@ -21,15 +21,13 @@ typedef struct Entry Entry;
 
 // Nuevas estructuras para JSON-HTML
 typedef struct ValueList ValueList;
+typedef struct Keyword Keyword;
 typedef struct Value Value;
 typedef struct Array Array;
 typedef struct Pair Pair;
 typedef struct PairList PairList;
 typedef struct Loop Loop;
 typedef struct VarRef VarRef;
-typedef struct AttributeList AttributeList;
-typedef struct Attribute Attribute;
-typedef struct Element Element;
 
 /**
  * Enumeraciones para tipos de valor en JSON-HTML
@@ -40,9 +38,9 @@ typedef enum {
     OBJECT_VALUE,
     ARRAY_VALUE,
     LOOP_VALUE,
-    VAR_REF_VALUE,
-    ELEMENT_VALUE
+    VAR_REF_VALUE
 } ValueType;
+
 /**
  * Node types for the Abstract Syntax Tree (AST).
  */
@@ -70,8 +68,12 @@ struct PairList {
 };
 
 struct Pair {
-	char * key;
+	Keyword * key;
 	Value * value;
+};
+
+struct Keyword {
+	Token type;
 };
 
 struct Value {
@@ -85,7 +87,6 @@ struct Value {
 		Array * arrayValue;
 		Loop * loopValue;
 		VarRef * varRefValue;
-		Element * elementValue;
 	} data;
 };
 
@@ -108,22 +109,6 @@ struct VarRef {
 	char * name;
 };
 
-struct AttributeList {
-	Attribute * attribute;
-	AttributeList * next;
-};
-
-struct Attribute {
-	char * name;
-	Value * value;
-};
-
-struct Element {
-	char * tag;
-	AttributeList * attributes;
-	ValueList * children;
-};
-
 /**
  * Node recursive destructors.
  */
@@ -140,8 +125,5 @@ void releaseArray(Array * array);
 void releaseValueList(ValueList * valueList);
 void releaseLoop(Loop * loop);
 void releaseVarRef(VarRef * varRef);
-void releaseAttributeList(AttributeList * attributeList);
-void releaseAttribute(Attribute * attribute);
-void releaseElement(Element * element);
 
 #endif
