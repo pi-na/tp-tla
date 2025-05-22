@@ -87,6 +87,13 @@
 %token <token> ITERATE_STRING
 %token <token> UL
 %token <token> LI
+%token <token> WIDTH HEIGHT
+%token <token> MARGIN MARGIN_TOP MARGIN_RIGHT MARGIN_BOTTOM MARGIN_LEFT
+%token <token> PADDING PADDING_TOP PADDING_RIGHT PADDING_BOTTOM PADDING_LEFT
+%token <token> BORDER_WIDTH BORDER_STYLE BORDER_COLOR BORDER_RADIUS
+%token <token> FONT_SIZE FONT_FAMILY FONT_WEIGHT
+%token <token> DISPLAY POSITION TOP RIGHT BOTTOM LEFT
+%token <token> OVERFLOW OPACITY
 
 /** Non-terminals. */
 %type <program> program
@@ -122,11 +129,13 @@ pairList: pair                                                     { $$ = single
 pair: key COLON value                                      { $$ = PairSemanticAction($1, $3); }
 	;
 
-key: TYPE													{ $$ = TokenValueSemanticAction($1); }
-	| CONTENT												{ $$ = TokenValueSemanticAction($1); }
-	| LOOP													{ $$ = TokenValueSemanticAction($1); }
-	| ITERABLE												{ $$ = TokenValueSemanticAction($1); }
-	| ITERATE												{ $$ = TokenValueSemanticAction($1); }
+/** TODO: SON KEYWORD!*/
+key: TYPE														{ $$ = TokenValueSemanticAction($1); }
+	| CONTENT													{ $$ = TokenValueSemanticAction($1); }
+	| LOOP														{ $$ = TokenValueSemanticAction($1); }
+	| ITERABLE													{ $$ = TokenValueSemanticAction($1); }
+	| ITERATE													{ $$ = TokenValueSemanticAction($1); }
+	| STYLE														{ $$ = TokenValueSemanticAction($1); }
 	;
 
 value: STRING                                                 	{ $$ = StringValueSemanticAction($1); }
@@ -141,10 +150,36 @@ value: STRING                                                 	{ $$ = StringValu
 	| ALT														{ $$ = TokenValueSemanticAction($1); }
 	| BODY														{ $$ = TokenValueSemanticAction($1); }
 	| REF														{ $$ = TokenValueSemanticAction($1); }
-	| STYLE														{ $$ = TokenValueSemanticAction($1); }
 	| ITERATOR_REF												{ $$ = TokenValueSemanticAction($1); }
 	| text														{ $$ = $1; }
 	| property													{ $$ = $1; }
+	| WIDTH           											{ $$ = TokenValueSemanticAction($1); }
+    | HEIGHT          											{ $$ = TokenValueSemanticAction($1); }
+    | MARGIN          											{ $$ = TokenValueSemanticAction($1); }
+    | MARGIN_TOP      											{ $$ = TokenValueSemanticAction($1); }
+    | MARGIN_RIGHT    											{ $$ = TokenValueSemanticAction($1); }
+    | MARGIN_BOTTOM   											{ $$ = TokenValueSemanticAction($1); }
+    | MARGIN_LEFT     											{ $$ = TokenValueSemanticAction($1); }
+    | PADDING         											{ $$ = TokenValueSemanticAction($1); }
+    | PADDING_TOP     											{ $$ = TokenValueSemanticAction($1); }
+    | PADDING_RIGHT   											{ $$ = TokenValueSemanticAction($1); }
+    | PADDING_BOTTOM  											{ $$ = TokenValueSemanticAction($1); }
+    | PADDING_LEFT    											{ $$ = TokenValueSemanticAction($1); }
+    | BORDER_WIDTH    											{ $$ = TokenValueSemanticAction($1); }
+    | BORDER_STYLE    											{ $$ = TokenValueSemanticAction($1); }
+    | BORDER_COLOR    											{ $$ = TokenValueSemanticAction($1); }
+    | BORDER_RADIUS   											{ $$ = TokenValueSemanticAction($1); }
+    | FONT_SIZE       											{ $$ = TokenValueSemanticAction($1); }
+    | FONT_FAMILY     											{ $$ = TokenValueSemanticAction($1); }
+    | FONT_WEIGHT     											{ $$ = TokenValueSemanticAction($1); }
+    | DISPLAY         											{ $$ = TokenValueSemanticAction($1); }
+    | POSITION        											{ $$ = TokenValueSemanticAction($1); }
+    | TOP             											{ $$ = TokenValueSemanticAction($1); }
+    | RIGHT           											{ $$ = TokenValueSemanticAction($1); }
+    | BOTTOM          											{ $$ = TokenValueSemanticAction($1); }
+    | LEFT            											{ $$ = TokenValueSemanticAction($1); }
+    | OVERFLOW        											{ $$ = TokenValueSemanticAction($1); }
+    | OPACITY         											{ $$ = TokenValueSemanticAction($1); }
 	;
 
 property: TEXTALIGN												{ $$ = TokenValueSemanticAction($1); }

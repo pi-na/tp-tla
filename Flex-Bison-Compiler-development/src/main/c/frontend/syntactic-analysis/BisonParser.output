@@ -26,45 +26,61 @@ Grammar
     8    | LOOP
     9    | ITERABLE
    10    | ITERATE
+   11    | STYLE
 
-   11 value: STRING
-   12      | JSON_NULL
-   13      | object
-   14      | array
-   15      | variableRef
-   16      | DIV
-   17      | VAR
-   18      | IMG
-   19      | SRC
-   20      | ALT
-   21      | BODY
-   22      | REF
-   23      | STYLE
+   12 value: STRING
+   13      | JSON_NULL
+   14      | object
+   15      | array
+   16      | variableRef
+   17      | DIV
+   18      | VAR
+   19      | IMG
+   20      | SRC
+   21      | ALT
+   22      | BODY
+   23      | REF
    24      | ITERATOR_REF
    25      | text
    26      | property
-
+   27      | WIDTH
    27 property: TEXTALIGN
-   28         | COLOR
-   29         | BACKGROUND_COLOR
-
-   30 text: H1
-   31     | H2
+   29      | MARGIN
+   30      | MARGIN_TOP
+   31      | MARGIN_RIGHT
+   32      | MARGIN_BOTTOM
+   33      | MARGIN_LEFT
    32     | H3
-   33     | H4
-   34     | A
-   35     | SPAN
-   36     | P
-   37     | TITLE
+   35      | PADDING_TOP
+   36      | PADDING_RIGHT
+   37      | PADDING_BOTTOM
+   38      | PADDING_LEFT
+   39      | BORDER_WIDTH
+   40      | BORDER_STYLE
+   41      | BORDER_COLOR
+   42      | BORDER_RADIUS
+   43      | FONT_SIZE
+   44      | FONT_FAMILY
+   45      | FONT_WEIGHT
+   46      | DISPLAY
+   47      | POSITION
+   48      | TOP
+   49      | RIGHT
+   50      | BOTTOM
+   51      | LEFT
+   52      | OVERFLOW
+   53      | OPACITY
 
-   38 array: OPEN_BRACKET valueList CLOSE_BRACKET
+   54 property: TEXTALIGN
+   55         | COLOR
+   56         | BACKGROUND_COLOR
 
-   39 valueList: %empty
-   40          | value
-   41          | valueList COMMA value
-
-   42 variableRef: DOLLAR IDENTIFIER
-
+   57 text: H1
+   58     | H2
+   59     | H3
+   60     | H4
+   61     | A
+   62     | SPAN
 
 Terminals, with rules where they appear
 
