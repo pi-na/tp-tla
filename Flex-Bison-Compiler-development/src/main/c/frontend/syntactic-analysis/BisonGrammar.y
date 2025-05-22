@@ -81,6 +81,11 @@
 %token <token> COLOR
 %token <token> BACKGROUND_COLOR
 %token <token> STYLE
+%token <token> ITERABLE
+%token <token> ITERATE
+%token <token> ITERATOR_REF
+%token <token> ITERATE_STRING
+
 
 /** Non-terminals. */
 %type <program> program
@@ -109,8 +114,7 @@ program: object                                                { $$ = ObjectProg
 object: OPEN_BRACE pairList CLOSE_BRACE { $$ = ObjectSemanticAction($2); }
      ;
 
-pairList: %empty                                               { $$ = emptyPairListAction(); }
-    | pair                                                     { $$ = singlePairListSemanticAction($1); }
+pairList: pair                                                     { $$ = singlePairListSemanticAction($1); }
     | pairList COMMA pair                                      { $$ = pairListSemanticAction($1, $3); }
 	;
 
@@ -120,6 +124,8 @@ pair: key COLON value                                      { $$ = PairSemanticAc
 key: TYPE													{ $$ = TokenValueSemanticAction($1); }
 	| CONTENT												{ $$ = TokenValueSemanticAction($1); }
 	| LOOP													{ $$ = TokenValueSemanticAction($1); }
+	| ITERABLE												{ $$ = TokenValueSemanticAction($1); }
+	| ITERATE												{ $$ = TokenValueSemanticAction($1); }
 	;
 
 value: STRING                                                 	{ $$ = StringValueSemanticAction($1); }
@@ -135,6 +141,7 @@ value: STRING                                                 	{ $$ = StringValu
 	| BODY														{ $$ = TokenValueSemanticAction($1); }
 	| REF														{ $$ = TokenValueSemanticAction($1); }
 	| STYLE														{ $$ = TokenValueSemanticAction($1); }
+	| ITERATOR_REF												{ $$ = TokenValueSemanticAction($1); }
 	| text														{ $$ = $1; }
 	| property													{ $$ = $1; }
 	;
@@ -162,8 +169,7 @@ array: OPEN_BRACKET valueList CLOSE_BRACKET                   { $$ = ArraySemant
 valueList: %empty                                             { $$ = emptyValueListAction(); }
     | value                                                   { $$ = singleValueListSemanticAction($1); }
     | valueList COMMA value                                   { $$ = valueListSemanticAction($1, $3); }
-    ;
-
+    ;							  							
 
 variableRef: DOLLAR IDENTIFIER                               { $$ = VariableRefSemanticAction($2); }
     ;

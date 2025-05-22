@@ -16,33 +16,6 @@ void shutdownAbstractSyntaxTreeModule() {
 
 /** PUBLIC FUNCTIONS */
 
-void releaseEntryList(EntryList * entryList) {
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	if (entryList == NULL) {
-		return;
-	}
-	
-	// Liberar todos los nodos de la lista enlazada recursivamente
-	if (entryList->next != NULL) {
-		releaseEntryList(entryList->next);
-	}
-	
-	// Liberar la entrada del nodo actual
-	if (entryList->entry != NULL) {
-		releaseEntry(entryList->entry);
-	}
-	
-	// Liberar el nodo actual
-	free(entryList);
-}
-
-void releaseEntry(Entry * entry) {
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	if (entry != NULL) {
-		free(entry);
-	}
-}
-
 void releaseObject(Object * object) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (object != NULL) {

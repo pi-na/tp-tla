@@ -40,7 +40,10 @@ UNICODE         \\u[0-9a-fA-F]{4}
 \"type\"                              { return KeywordLexemeAction(createLexicalAnalyzerContext(), TYPE); }
 \"content\"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), CONTENT); }
 \"loop\"                              { return KeywordLexemeAction(createLexicalAnalyzerContext(), LOOP); }
+\"iterable\"                              { return KeywordLexemeAction(createLexicalAnalyzerContext(), ITERABLE); }
+\"iterate\"                              { return KeywordLexemeAction(createLexicalAnalyzerContext(), ITERATE); }
 
+$iterate                              { return KeywordLexemeAction(createLexicalAnalyzerContext(), ITERATOR_REF); }
 \"color\"                             { return ValueLexemeAction(createLexicalAnalyzerContext(), COLOR); }
 \"style\"                             { return ValueLexemeAction(createLexicalAnalyzerContext(), STYLE); }
 \"var\"                               { return ValueLexemeAction(createLexicalAnalyzerContext(), VAR); }
@@ -86,8 +89,6 @@ UNICODE         \\u[0-9a-fA-F]{4}
 "null"                              { return NullLexemeAction(createLexicalAnalyzerContext()); }
 
 "$"                                 { return OperatorLexemeAction(createLexicalAnalyzerContext(), DOLLAR); }
-
-{IDENTIFIER}                        { return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 
 [[:space:]]+                        { IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 .                                   { return UnknownLexemeAction(createLexicalAnalyzerContext()); }

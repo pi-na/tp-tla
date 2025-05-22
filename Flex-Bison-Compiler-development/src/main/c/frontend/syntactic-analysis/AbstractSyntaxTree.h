@@ -52,15 +52,6 @@ struct Object {
 	PairList * pairs;
 };
 
-struct EntryList {
-	Entry * entry;
-	EntryList * next;
-};
-
-struct Entry {
-	/** Para compatibilidad con código existente */
-};
-
 struct PairList {
 	Pair * pair;
 	PairList * next;
