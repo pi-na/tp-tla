@@ -22,40 +22,6 @@ static struct {
 } variables[MAX_VARIABLES];
 static int variableCount = 0;
 
-// Lista de elementos HTML válidos
-static const char* validElements[] = {
-	"html", "head", "body", "title", "p", "div", "span", "a", "img", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "h6", NULL
-};
-
-// Funciones de validación
-static boolean isValidElement(const char* type) {
-	if (type == NULL) return false;
-	for (int i = 0; validElements[i] != NULL; i++) {
-		if (strcmp(type, validElements[i]) == 0) {
-			return true;
-		}
-	}
-	return false;
-}
-
-static boolean isFirstPairType(PairList* pairs) {
-	if (pairs == NULL || pairs->pair == NULL || pairs->pair->key == NULL) {
-		return false;
-	}
-	return strcmp(pairs->pair->key, "type") == 0;
-}
-
-static boolean hasDuplicateKeys(PairList* pairs) {
-	for (PairList* outer = pairs; outer != NULL; outer = outer->next) {
-		for (PairList* inner = outer->next; inner != NULL; inner = inner->next) {
-			if (strcmp(outer->pair->key, inner->pair->key) == 0) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 static void defineVariable(const char* name) {
 	for (int i = 0; i < variableCount; i++) {
 		if (strcmp(variables[i].name, name) == 0) {
@@ -136,194 +102,18 @@ static void _logSyntacticAnalyzerAction(const char * functionName) {
 
 Program * ObjectProgramSemanticAction(CompilerState * compilerState, Object * object) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	_currentState = compilerState;  // Guardar el estado actual
-	
-	// Validar que el objeto raíz tenga 'type' como primer campo
-	if (!isFirstPairType(object->pairs)) {
-		logError(_logger, "The 'type' field must be the first field in the object");
-		compilerState->succeed = false;
-		return NULL;
-	}
-	
-	// Validar que no haya campos duplicados
-	if (hasDuplicateKeys(object->pairs)) {
-		logError(_logger, "Duplicate keys found in object");
-		compilerState->succeed = false;
-		return NULL;
-	}
-	
-	// Validar que el tipo sea un elemento HTML válido
-	if (object->pairs && object->pairs->pair && object->pairs->pair->value->type == STRING_VALUE) {
-		if (!isValidElement(object->pairs->pair->value->data.stringValue)) {
-			logError(_logger, "Invalid HTML element type: %s", object->pairs->pair->value->data.stringValue);
-			compilerState->succeed = false;
-			return NULL;
-		}
-	}
-	
+	_currentState = compilerState;
 	Program * program = calloc(1, sizeof(Program));
 	program->object = object;
 	compilerState->abstractSyntaxtTree = program;
-	
-	if (0 < flexCurrentContext()) {
-		logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
-		compilerState->succeed = false;
-	}
-	else {
-		compilerState->succeed = true;
-	}
+	compilerState->succeed = true;
 	return program;
-}
-
-// Función para validar compatibilidad de contenido
-static boolean isContentCompatible(const char* elementType, Value* content) {
-	if (content == NULL) return true;  // Contenido vacío es válido
-
-	// Elementos que solo aceptan texto o referencias a variables
-	const char* textOnlyElements[] = {"title", "p", "span", "h1", "div", NULL};
-	boolean isTextOnly = false;
-	
-	for (int i = 0; textOnlyElements[i] != NULL; i++) {
-		if (strcmp(elementType, textOnlyElements[i]) == 0) {
-			isTextOnly = true;
-			break;
-		}
-	}
-
-	if (isTextOnly) {
-		// Permitir string, referencia a variable, u objeto que representa una referencia a variable
-		if (content->type == STRING_VALUE || content->type == VAR_REF_VALUE) {
-			return true;
-		}
-		
-		// Verificar si es un objeto que representa una referencia a variable
-		if (content->type == OBJECT_VALUE) {
-			Object* obj = content->data.objectValue;
-			if (obj != NULL && obj->pairs != NULL && obj->pairs->pair != NULL &&
-				strcmp(obj->pairs->pair->key, "var") == 0 && 
-				obj->pairs->pair->value != NULL &&
-				obj->pairs->pair->value->type == STRING_VALUE) {
-				return true;
-			}
-		}
-		
-		logError(_logger, "Element '%s' can only contain text content or variable references", elementType);
-		return false;
-	}
-
-	// Elementos que solo aceptan otros elementos
-	const char* containerElements[] = {"html", "head", "body", "div", "ul", "ol", NULL};
-	boolean isContainer = false;
-	
-	for (int i = 0; containerElements[i] != NULL; i++) {
-		if (strcmp(elementType, containerElements[i]) == 0) {
-			isContainer = true;
-			break;
-		}
-	}
-
-	if (isContainer && content->type == STRING_VALUE) {
-		logError(_logger, "Element '%s' cannot contain direct text content", elementType);
-		return false;
-	}
-
-	return true;
-}
-
-// Función auxiliar para verificar si un objeto es una referencia a variable
-static boolean isVarRefObject(Object* object) {
-	if (object == NULL || object->pairs == NULL || object->pairs->pair == NULL) {
-		return false;
-	}
-	return strcmp(object->pairs->pair->key, "var") == 0;
-}
-
-// Modificar la función validateHtmlObject para incluir la validación de contenido
-static boolean validateHtmlObject(Object* object) {
-	if (object == NULL || object->pairs == NULL) return false;
-
-	// Si es un objeto que representa una referencia a variable, no necesita validación HTML
-	if (isVarRefObject(object)) {
-		return true;
-	}
-
-	// Verificar que tenga un campo "type" válido
-	PairList* pairs = object->pairs;
-	boolean hasType = false;
-	boolean hasValidType = false;
-	const char* elementType = NULL;
-	Value* contentValue = NULL;
-
-	while (pairs != NULL) {
-		if (strcmp(pairs->pair->key, "type") == 0) {
-			hasType = true;
-			if (pairs->pair->value->type == STRING_VALUE) {
-				elementType = pairs->pair->value->data.stringValue;
-				hasValidType = isValidElement(elementType);
-				if (!hasValidType) {
-					logError(_logger, "Invalid HTML element type: %s", elementType);
-					return false;
-				}
-			}
-		} else if (strcmp(pairs->pair->key, "content") == 0) {
-			contentValue = pairs->pair->value;
-		}
-		pairs = pairs->next;
-	}
-
-	if (!hasType || !hasValidType) {
-		logError(_logger, "Missing or invalid 'type' field in HTML element");
-		return false;
-	}
-
-	// Validar compatibilidad de contenido
-	if (!isContentCompatible(elementType, contentValue)) {
-		return false;
-	}
-
-	// Validar recursivamente el contenido
-	if (contentValue != NULL) {
-		if (contentValue->type == OBJECT_VALUE) {
-			if (!validateHtmlObject(contentValue->data.objectValue)) {
-				return false;
-			}
-		} else if (contentValue->type == ARRAY_VALUE) {
-			ValueList* values = contentValue->data.arrayValue->values;
-			while (values != NULL) {
-				if (values->value->type == OBJECT_VALUE) {
-					if (!validateHtmlObject(values->value->data.objectValue)) {
-						return false;
-					}
-				}
-				values = values->next;
-			}
-		}
-	}
-
-	return true;
 }
 
 Object * ObjectSemanticAction(PairList * pairs) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	// Validar que no haya campos duplicados
-	if (hasDuplicateKeys(pairs)) {
-		logError(_logger, "Duplicate keys found in object");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
 	Object * object = calloc(1, sizeof(Object));
 	object->pairs = pairs;
-
-	// Validar la estructura HTML si este objeto es un elemento HTML
-	if (isFirstPairType(pairs)) {
-		if (!validateHtmlObject(object)) {
-			_currentState->succeed = false;
-			return NULL;
-		}
-	}
-	
 	return object;
 }
 
@@ -346,7 +136,6 @@ EntryList * singleEntryListSemanticAction(Entry * entry) {
 Entry * emptyEntryAction() {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Entry * entry = calloc(1, sizeof(Entry));
-	// No hay campos para inicializar en Entry ya que está vacío
 	return entry;
 }
 
@@ -370,7 +159,6 @@ PairList * pairListSemanticAction(PairList * pairList, Pair * newPair) {
 	if (pairList == NULL) {
 		return singlePairListSemanticAction(newPair);
 	}
-	
 	PairList * current = pairList;
 	while (current->next != NULL) {
 		current = current->next;
@@ -428,13 +216,6 @@ Value * LoopValueSemanticAction(Loop * loop) {
 
 Value * VariableRefValueSemanticAction(VarRef * varRef) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	// Si la referencia es NULL (debido a un error), propagar el error
-	if (varRef == NULL) {
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
 	Value * val = calloc(1, sizeof(Value));
 	val->type = VAR_REF_VALUE;
 	val->data.varRefValue = varRef;
@@ -474,7 +255,6 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 	if (valueList == NULL) {
 		return singleValueListSemanticAction(newValue);
 	}
-	
 	ValueList * current = valueList;
 	while (current->next != NULL) {
 		current = current->next;
@@ -485,24 +265,6 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 
 Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	// Validar que el cuerpo tenga la estructura correcta
-	if (body == NULL || !isFirstPairType(body->pairs)) {
-		logError(_logger, "Loop body must be a valid HTML element with 'type' as first field");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
-	// Validar que el iterable sea un objeto válido
-	if (iterable == NULL) {
-		logError(_logger, "Loop iterable must be a valid object");
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
-	// Definir la variable iteradora
-	defineVariable(iteratorName);
-	
 	Loop * loop = calloc(1, sizeof(Loop));
 	loop->iteratorName = iteratorName;
 	loop->iterable = iterable;
@@ -510,38 +272,10 @@ Loop * LoopSemanticAction(char * iteratorName, Object * iterable, Object * body)
 	return loop;
 }
 
-static boolean validateVariableRef(const char* name) {
-	if (name == NULL) return false;
-	
-	// Verificar si la variable está siendo resuelta (referencia circular)
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			if (variables[i].isBeingResolved) {
-				logError(_logger, "Circular reference detected for variable '%s'", name);
-				return false;
-			}
-			return true;
-		}
-	}
-	
-	logError(_logger, "Variable '%s' is not defined", name);
-	return false;
-}
-
 VarRef * VariableRefSemanticAction(char * name) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	
-	if (!validateVariableRef(name)) {
-		_currentState->succeed = false;
-		return NULL;
-	}
-	
 	VarRef * varRef = calloc(1, sizeof(VarRef));
 	varRef->name = name;
-	
-	// Marcar la variable como en proceso de resolución
-	setVariableResolutionStatus(name, true);
-	
 	return varRef;
 }
 
@@ -563,7 +297,6 @@ AttributeList * attributeListSemanticAction(AttributeList * attributeList, Attri
 	if (attributeList == NULL) {
 		return singleAttributeListSemanticAction(newAttribute);
 	}
-	
 	AttributeList * current = attributeList;
 	while (current->next != NULL) {
 		current = current->next;
@@ -583,43 +316,33 @@ Attribute * AttributeSemanticAction(char * name, Value * value) {
 Element * ElementSemanticAction(Object * object) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Element * element = calloc(1, sizeof(Element));
-	
-	// Extract the type and content from the object
+	// Extraer el primer par como tag y el resto como atributos y/o contenido
 	PairList * currentPair = object->pairs;
 	char * type = NULL;
 	Value * content = NULL;
 	AttributeList * attributes = NULL;
-	
 	while (currentPair != NULL) {
-		if (strcmp(currentPair->pair->key, "type") == 0 && currentPair->pair->value->type == STRING_VALUE) {
-			type = currentPair->pair->value->data.stringValue;
-		} else if (strcmp(currentPair->pair->key, "content") == 0) {
+		// No usar strcmp, solo tomar el primer par como type, el segundo como content, el resto como atributos
+		if (type == NULL && currentPair->pair != NULL) {
+			type = currentPair->pair->value && currentPair->pair->value->type == STRING_VALUE ? currentPair->pair->value->data.stringValue : NULL;
+		} else if (content == NULL && currentPair->pair != NULL) {
 			content = currentPair->pair->value;
-		} else {
-			// Other attributes can be processed here
-			attributes = attributeListSemanticAction(attributes, 
-				AttributeSemanticAction(currentPair->pair->key, currentPair->pair->value));
+		} else if (currentPair->pair != NULL) {
+			attributes = attributeListSemanticAction(attributes, AttributeSemanticAction(currentPair->pair->key, currentPair->pair->value));
 		}
 		currentPair = currentPair->next;
 	}
-	
 	element->tag = type;
 	element->attributes = attributes;
-	
-	// Handle content value - could be a single value or an array
 	if (content != NULL) {
 		if (content->type == ARRAY_VALUE) {
-			// Content is an array, use its values directly
-			ValueList * contentValues = content->data.arrayValue->values;
-			element->children = contentValues;
+			element->children = content->data.arrayValue->values;
 		} else {
-			// Content is a single value, create a value list with just this value
 			element->children = singleValueListSemanticAction(content);
 		}
 	} else {
 		element->children = NULL;
 	}
-	
 	return element;
 }
 

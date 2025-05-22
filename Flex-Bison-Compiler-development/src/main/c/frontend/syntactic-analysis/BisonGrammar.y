@@ -50,7 +50,6 @@
 %destructor { releaseVarRef($$); } <varRef>
 %destructor { releaseAttributeList($$); } <attributeList>
 %destructor { releaseAttribute($$); } <attribute>
-%destructor { releaseElement($$); } <element>
 
 /** Terminals. */
 %token <token> CLOSE_PARENTHESIS
@@ -83,25 +82,30 @@
 %type <varRef> variableRef
 %type <attributeList> attributeList
 %type <attribute> attribute
-%type <element> element
 
 %%
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
 
+// NOTA: Ya no se validan claves duplicadas, compatibilidad de contenido ni validez de elementos HTML en la gramática.
+// Esas validaciones se delegan al backend.
+// Las producciones type_pair y content_pair no pueden forzar que el string sea exactamente 'type' o 'content', eso también se delega al backend.
+
 program: object                                                { $$ = ObjectProgramSemanticAction(currentCompilerState(), $1); }
 	;
 
-object: OPEN_BRACE pairList CLOSE_BRACE                        { $$ = ObjectSemanticAction($2); }
-	;
+object: OPEN_BRACE pairList CLOSE_BRACE { $$ = ObjectSemanticAction($2); }
+     ;
 
 pairList: %empty                                               { $$ = emptyPairListAction(); }
     | pair                                                     { $$ = singlePairListSemanticAction($1); }
     | pairList COMMA pair                                      { $$ = pairListSemanticAction($1, $3); }
 	;
 
-pair: STRING COLON value                                      { $$ = PairSemanticAction($1, $3); }
+pair: key COLON value                                      { $$ = PairSemanticAction($1, $3); }
 	;
+
+key: 
 
 value: STRING                                                 { $$ = StringValueSemanticAction($1); }
     | JSON_NULL                                               { $$ = NullValueSemanticAction(); }
@@ -124,17 +128,6 @@ loop: FOR OPEN_PARENTHESIS IDENTIFIER IN object CLOSE_PARENTHESIS object
     ;
 
 variableRef: DOLLAR IDENTIFIER                               { $$ = VariableRefSemanticAction($2); }
-    ;
-
-element: object                                              { $$ = ElementSemanticAction($1); }
-    ;
-
-attributeList: %empty                                        { $$ = emptyAttributeListAction(); }
-    | attribute                                              { $$ = singleAttributeListSemanticAction($1); }
-    | attributeList COMMA attribute                          { $$ = attributeListSemanticAction($1, $3); }
-    ;
-
-attribute: STRING COLON value                               { $$ = AttributeSemanticAction($1, $3); }
     ;
 
 %%

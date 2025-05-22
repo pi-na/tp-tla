@@ -50,6 +50,4 @@ AttributeList * singleAttributeListSemanticAction(Attribute * attribute);
 AttributeList * attributeListSemanticAction(AttributeList * attributeList, Attribute * newAttribute);
 Attribute * AttributeSemanticAction(char * name, Value * value);
 
-Element * ElementSemanticAction(Object * object);
-
 #endif
