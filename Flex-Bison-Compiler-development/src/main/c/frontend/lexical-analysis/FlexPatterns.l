@@ -96,7 +96,6 @@ $iterate                              { return KeywordLexemeAction(createLexical
 \"p\"                                 { return ValueLexemeAction(createLexicalAnalyzerContext(), P); }
 \"title\"                             { return ValueLexemeAction(createLexicalAnalyzerContext(), TITLE); }
 \"body\"                              { return ValueLexemeAction(createLexicalAnalyzerContext(), BODY); }
-\"textalign\"                         { return ValueLexemeAction(createLexicalAnalyzerContext(), TEXTALIGN); }
 
 \"                                  { BEGIN(STRING); BeginStringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>\"                          { int token = EndStringLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); return token; }
