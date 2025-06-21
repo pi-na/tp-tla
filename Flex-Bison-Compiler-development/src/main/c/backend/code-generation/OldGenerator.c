@@ -1,4 +1,4 @@
-#include "Generator.h"
+#include "OldGenerator.h"
 
 /* MODULE INTERNAL STATE */
 

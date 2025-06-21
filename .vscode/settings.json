@@ -2,6 +2,7 @@
     "files.associations": {
         "bisonactions.h": "c",
         "calculator.h": "c",
-        "flexactions.h": "c"
+        "flexactions.h": "c",
+        "__config": "c"
     }
 }

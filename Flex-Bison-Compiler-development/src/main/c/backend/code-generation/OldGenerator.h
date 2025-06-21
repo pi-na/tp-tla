@@ -11,6 +11,7 @@
 
 void initializeHtmlGeneratorModule();
 void shutdownHtmlGeneratorModule();
+
 void generateHtml(CompilerState * compilerState);
 
 #endif

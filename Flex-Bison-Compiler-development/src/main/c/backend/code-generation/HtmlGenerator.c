@@ -1,4 +1,6 @@
 #include "HtmlGenerator.h"
+#include "../../shared/Type.h"
+#include "../../frontend/syntactic-analysis/AbstractSyntaxTree.h"
 
 /* MODULE INTERNAL STATE */
 
@@ -227,16 +229,6 @@ static void _generateValue(const unsigned int indentationLevel, Value * value) {
             free(escaped);
             break;
         }
-        case INTEGER_VALUE:
-            _output(indentationLevel, "<span class=\"json-number\">%d</span>\n", value->data.integerValue);
-            break;
-        case FLOAT_VALUE:
-            _output(indentationLevel, "<span class=\"json-number\">%.2f</span>\n", value->data.floatValue);
-            break;
-        case BOOLEAN_VALUE:
-            _output(indentationLevel, "<span class=\"json-boolean\">%s</span>\n", 
-                   value->data.booleanValue ? "true" : "false");
-            break;
         case NULL_VALUE:
             _output(indentationLevel, "<span class=\"json-null\">null</span>\n");
             break;
@@ -255,20 +247,10 @@ static void _generateValue(const unsigned int indentationLevel, Value * value) {
     }
 }
 
-/** PUBLIC FUNCTIONS */
-
-void generateHtml(CompilerState * compilerState, ProcessingResult * processingResult) {
-    logDebugging(_logger, "Generating HTML output...");
-    
-    _generateHtmlPrologue();
-    
-    if (processingResult && processingResult->succeed && processingResult->processedValue) {
-        _generateValue(1, processingResult->processedValue);
-    } else {
-        _output(1, "<p>Error: No processed content to display</p>\n");
-    }
-    
-    _generateHtmlEpilogue();
-    
-    logDebugging(_logger, "HTML generation completed.");
+void generateHtml(CompilerState * compilerState) {
+	logDebugging(_logger, "Generating final output...");
+	_generateHtmlPrologue();
+	_generateProgram(compilerState->abstractSyntaxtTree);
+	_generateHtmlEpilogue();
+	logDebugging(_logger, "Generation is done.");
 }
