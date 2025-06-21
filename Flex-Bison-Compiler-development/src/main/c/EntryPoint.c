@@ -22,7 +22,7 @@ const int main(const int count, const char ** arguments) {
 	initializeAbstractSyntaxTreeModule();
 	//initializeCalculatorModule();
 	initializeJsonProcessorModule();
-	//initializeGeneratorModule(); // Commented out since generator.c/generator.h are not being used
+	initializeHtmlGeneratorModule(); // Commented out since generator.c/generator.h are not being used
 
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
@@ -56,7 +56,7 @@ const int main(const int count, const char ** arguments) {
 	logDebugging(logger, "Releasing AST resources...");
 	releaseProgram(program);
 	logDebugging(logger, "Releasing modules resources...");
-	//shutdownGeneratorModule(); // Commented out since generator.c/generator.h are not being used
+	shutdownHtmlGeneratorModule(); // Commented out since generator.c/generator.h are not being used
 	shutdownJsonProcessorModule();
 	//shutdownCalculatorModule();
 	shutdownAbstractSyntaxTreeModule();
