@@ -31,6 +31,8 @@ static char * _indentation(const unsigned int level);
 static void _output(const unsigned int indentationLevel, const char * const format, ...);
 static char * _escapeHtml(const char * input);
 static char * _keywordToString(Keyword * keyword);
+static char * _toLowerCase(const char * s);
+
 
 /**
  * Convierte una keyword a string
@@ -168,7 +170,7 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
         } else if (pair->key->type == CONTENT) {
             contentVal = pair->value;
         } else {
-            char * attrName = TOKEN_STRINGS[pair->key->type];
+            const char * attrName = TOKEN_STRINGS[pair->key->type];
             char * attrValue = pair->value->data.stringValue;
             char * attrString = NULL;
             
@@ -219,6 +221,36 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
     // Limpiar buffer
     free(attributesBuffer);
 }
+
+static char* _toLowerCase(const char* s) {
+    if (!s) return strdup("");
+    size_t len = strlen(s);
+    char* result = malloc(len + 1);
+    if (!result) return NULL;  // o maneja el error como prefieras
+    for (size_t i = 0; i < len; i++) {
+        result[i] = tolower((unsigned char)s[i]);
+    }
+    result[len] = '\0';
+    return result;
+}
+
+static void _generateValue(const unsigned int indentationLevel, Value * value) {
+    switch (value->type) {
+        case STRING_VALUE:
+            _output(indentationLevel, "%s\n", _escapeHtml(value->data.stringValue));
+            break;
+        case OBJECT_VALUE:
+            _generateObject(indentationLevel, value->data.objectValue);
+            break;
+        case ARRAY_VALUE:
+            _generateArray(indentationLevel, value->data.arrayValue);
+            break;
+        default:
+            logError(_logger, "Unknown Value type: %d", value->type);
+            break;
+    }
+}
+
 
 
 static void generateContent(const unsigned int indentationLevel, Pair * pair) {

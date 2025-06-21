@@ -1,13 +1,16 @@
 #ifndef HTML_GENERATOR_H_INCLUDED
 #define HTML_GENERATOR_H_INCLUDED
 
-#include "../../shared/CompilerState.h"
-#include "../../shared/Logger.h"
-#include "../../shared/String.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>    // tolower
+#include "../../shared/CompilerState.h"
+#include "../../shared/Logger.h"
+#include "../../shared/String.h"
+
 
 // Mapping de cada Token a su nombre de etiqueta o atributo HTML correspondiente
 static const char *TOKEN_STRINGS[] = {
@@ -71,5 +74,7 @@ static const char *TOKEN_STRINGS[] = {
 void initializeHtmlGeneratorModule();
 void shutdownHtmlGeneratorModule();
 void generateHtml(CompilerState * compilerState);
+
+
 
 #endif
