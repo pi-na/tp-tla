@@ -32,6 +32,7 @@ static void _output(const unsigned int indentationLevel, const char * const form
 static char * _escapeHtml(const char * input);
 static char * _keywordToString(Keyword * keyword);
 static char * _toLowerCase(const char * s);
+static char * _tokenToString(int tokenValue);
 
 
 /**
@@ -92,19 +93,14 @@ static char * _escapeHtml(const char * input) {
  * Crea el prólogo del HTML generado
  */
 static void _generateHtmlPrologue(void) {
-    _output(0, "%s",
-        "<!DOCTYPE html>\n"
-        "<html lang=\"en\">\n"
-        "<head>\n"
-        "    <meta charset=\"UTF-8\">\n"
-        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
-        "    <title>Generated from JSON</title>\n"
-        "    <style>\n"
-        "        body { font-family: Arial, sans-serif; margin: 20px; }\n"
-        "    </style>\n"
-        "</head>\n"
-        "<body>\n"
-        "    <h1>HEADER DEBUG! Eliminame antes de entregar</h1>\n"
+    _output(0,
+      "<!DOCTYPE html>\n"
+      "<html lang=\"en\">\n"
+      "<head>\n"
+      "  <meta charset=\"UTF-8\">\n"
+      "  <title>Salida TP</title>\n"
+      "</head>\n"
+      "<body>"
     );
 }
 
@@ -163,14 +159,23 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
     for(PairList * current = object->pairs; current != NULL; current = current->next) {
         Pair * pair = current->pair;
         
+        // DEBUG: Print token type
+        logDebugging(_logger, "Processing pair with key type: %d (TYPE=%d)", pair->key->type, TYPE);
+        
         if (pair->key->type == TYPE) {
             if (pair->value->type == STRING_VALUE) {
                 tagName = pair->value->data.stringValue;
+                logDebugging(_logger, "Found TYPE field with value: %s", tagName);
+            } else if (pair->value->type == TOKEN_VALUE) {
+                logDebugging(_logger, "TOKEN_VALUE detected with token: %d", pair->value->data.tokenValue);
+                tagName = _tokenToString(pair->value->data.tokenValue);
+                logDebugging(_logger, "Found TYPE field with token value: %s (token: %d)", tagName ? tagName : "(null)", pair->value->data.tokenValue);
             }
         } else if (pair->key->type == CONTENT) {
             contentVal = pair->value;
+            logDebugging(_logger, "Found CONTENT field");
         } else {
-            const char * attrName = TOKEN_STRINGS[pair->key->type];
+            const char * attrName = _tokenToString(pair->key->type);
             char * attrValue = pair->value->data.stringValue;
             char * attrString = NULL;
             
@@ -295,4 +300,65 @@ void generateHtml(CompilerState * compilerState) {
 	_generateProgram(compilerState->abstractSyntaxtTree);
 	_generateHtmlEpilogue();
 	logDebugging(_logger, "Generation is done.");
+}
+
+static char * _tokenToString(int tokenValue) {
+    switch (tokenValue) {
+        case TYPE: return "type";
+        case CONTENT: return "content";
+        case DIV: return "div";
+        case VAR: return "var";
+        case IMG: return "img";
+        case SRC: return "src";
+        case ALT: return "alt";
+        case BODY: return "body";
+        case REF: return "ref";
+        case H1: return "h1";
+        case H2: return "h2";
+        case H3: return "h3";
+        case H4: return "h4";
+        case A: return "a";
+        case SPAN: return "span";
+        case P: return "p";
+        case TITLE: return "title";
+        case COLOR: return "color";
+        case BACKGROUND_COLOR: return "background-color";
+        case STYLE: return "style";
+        case ITERABLE: return "iterable";
+        case ITERATE: return "iterate";
+        case ITERATOR_REF: return "iterator-ref";
+        case ITERATE_STRING: return "iterate-string";
+        case UL: return "ul";
+        case LI: return "li";
+        case ID: return "id";
+        case CLASS: return "class";
+        case WIDTH: return "width";
+        case HEIGHT: return "height";
+        case MARGIN: return "margin";
+        case MARGIN_TOP: return "margin-top";
+        case MARGIN_RIGHT: return "margin-right";
+        case MARGIN_BOTTOM: return "margin-bottom";
+        case MARGIN_LEFT: return "margin-left";
+        case PADDING: return "padding";
+        case PADDING_TOP: return "padding-top";
+        case PADDING_RIGHT: return "padding-right";
+        case PADDING_BOTTOM: return "padding-bottom";
+        case PADDING_LEFT: return "padding-left";
+        case BORDER_WIDTH: return "border-width";
+        case BORDER_STYLE: return "border-style";
+        case BORDER_COLOR: return "border-color";
+        case BORDER_RADIUS: return "border-radius";
+        case FONT_SIZE: return "font-size";
+        case FONT_FAMILY: return "font-family";
+        case FONT_WEIGHT: return "font-weight";
+        case DISPLAY: return "display";
+        case POSITION: return "position";
+        case TOP: return "top";
+        case RIGHT: return "right";
+        case BOTTOM: return "bottom";
+        case LEFT: return "left";
+        case OVERFLOW: return "overflow";
+        case OPACITY: return "opacity";
+        default: return NULL;
+    }
 }
