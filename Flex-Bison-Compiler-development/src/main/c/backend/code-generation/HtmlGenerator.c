@@ -94,18 +94,6 @@ static void _generateHtmlPrologue(void) {
         "    <meta charset=\"UTF-8\">\n"
         "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
         "    <title>Generated from JSON</title>\n"
-        "    <style>\n"
-        "        body { font-family: Arial, sans-serif; margin: 20px; }\n"
-        "        .json-object { border: 1px solid #ccc; padding: 10px; margin: 5px 0; }\n"
-        "        .json-array { border: 1px solid #999; padding: 10px; margin: 5px 0; }\n"
-        "        .json-pair { margin: 5px 0; }\n"
-        "        .json-key { font-weight: bold; color: #0066cc; }\n"
-        "        .json-value { margin-left: 10px; }\n"
-        "        .json-string { color: #009900; }\n"
-        "        .json-number { color: #cc6600; }\n"
-        "        .json-boolean { color: #cc0066; }\n"
-        "        .json-null { color: #666666; font-style: italic; }\n"
-        "    </style>\n"
         "</head>\n"
         "<body>\n"
         "    <h1>JSON to HTML Conversion</h1>\n"
@@ -227,16 +215,16 @@ static void _generateValue(const unsigned int indentationLevel, Value * value) {
             free(escaped);
             break;
         }
-        case INTEGER_VALUE:
-            _output(indentationLevel, "<span class=\"json-number\">%d</span>\n", value->data.integerValue);
-            break;
-        case FLOAT_VALUE:
-            _output(indentationLevel, "<span class=\"json-number\">%.2f</span>\n", value->data.floatValue);
-            break;
-        case BOOLEAN_VALUE:
-            _output(indentationLevel, "<span class=\"json-boolean\">%s</span>\n", 
-                   value->data.booleanValue ? "true" : "false");
-            break;
+        // case INTEGER_VALUE:
+        //     _output(indentationLevel, "<span class=\"json-number\">%d</span>\n", value->data.integerValue);
+        //     break;
+        // case FLOAT_VALUE:
+        //     _output(indentationLevel, "<span class=\"json-number\">%.2f</span>\n", value->data.floatValue);
+        //     break;
+        // case BOOLEAN_VALUE:
+        //     _output(indentationLevel, "<span class=\"json-boolean\">%s</span>\n", 
+        //            value->data.booleanValue ? "true" : "false");
+        //     break;
         case NULL_VALUE:
             _output(indentationLevel, "<span class=\"json-null\">null</span>\n");
             break;

@@ -3,7 +3,7 @@
 
 #include "../../shared/Logger.h"
 #include "../../shared/Type.h"
-#include "AbstractSyntaxTree.h"
+#include "../../frontend/syntactic-analysis/AbstractSyntaxTree.h"
 
 /**
  * Resultado del procesamiento de JSON
@@ -18,4 +18,4 @@ void shutdownJsonProcessorModule();
 
 ProcessingResult processProgram(Program * program);
 
-#endif
+#endif 

@@ -4,7 +4,7 @@
 #include "../../shared/CompilerState.h"
 #include "../../shared/Logger.h"
 #include "../../shared/String.h"
-#include "../domain-specific/JsonPocessor.h"
+#include "../domain-specific/JsonProcessor.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

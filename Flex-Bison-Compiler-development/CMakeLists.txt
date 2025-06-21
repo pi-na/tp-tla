@@ -92,7 +92,9 @@ add_definitions(-DDEBUG)
 add_executable(Compiler
     src/main/c/EntryPoint.c
     src/main/c/frontend/lexical-analysis/FlexActions.c
-    src/main/c/backend/code-generation/Generator.c
+    # src/main/c/backend/code-generation/Generator.c
+    src/main/c/backend/code-generation/HtmlGenerator.c
+    src/main/c/backend/domain-specific/JsonProcessor.c
     src/main/c/frontend/lexical-analysis/FlexScanner.c
     src/main/c/frontend/lexical-analysis/LexicalAnalyzerContext.c
     src/main/c/frontend/syntactic-analysis/AbstractSyntaxTree.c

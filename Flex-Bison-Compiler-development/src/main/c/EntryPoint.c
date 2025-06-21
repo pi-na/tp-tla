@@ -2,6 +2,7 @@
 #include "frontend/syntactic-analysis/AbstractSyntaxTree.h"
 #include "frontend/syntactic-analysis/BisonActions.h"
 #include "frontend/syntactic-analysis/SyntacticAnalyzer.h"
+#include "backend/domain-specific/JsonProcessor.h"
 #include "shared/CompilerState.h"
 #include "shared/Environment.h"
 #include "shared/Logger.h"
@@ -19,7 +20,8 @@ const int main(const int count, const char ** arguments) {
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
 	//initializeCalculatorModule();
-	initializeGeneratorModule();
+	initializeJsonProcessorModule();
+	//initializeGeneratorModule(); // Commented out since generator.c/generator.h are not being used
 
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
@@ -36,8 +38,15 @@ const int main(const int count, const char ** arguments) {
 	CompilationStatus compilationStatus = SUCCEED;
 	Program * program = compilerState.abstractSyntaxtTree;
 	if (syntacticAnalysisStatus == ACCEPT) {
-		logDebugging(logger, "Generating code...");
-		generate(&compilerState);
+		logDebugging(logger, "Processing JSON program...");
+		ProcessingResult processingResult = processProgram(program);
+		if (processingResult.succeed) {
+			logDebugging(logger, "Generating HTML...");
+			generateHtml(&compilerState, &processingResult);
+		} else {
+			logError(logger, "Failed to process the JSON program.");
+			compilationStatus = FAILED;
+		}
 	}
 	else {
 		logError(logger, "The syntactic-analysis phase rejects the input program.");
@@ -46,7 +55,8 @@ const int main(const int count, const char ** arguments) {
 	logDebugging(logger, "Releasing AST resources...");
 	releaseProgram(program);
 	logDebugging(logger, "Releasing modules resources...");
-	shutdownGeneratorModule();
+	//shutdownGeneratorModule(); // Commented out since generator.c/generator.h are not being used
+	shutdownJsonProcessorModule();
 	//shutdownCalculatorModule();
 	shutdownAbstractSyntaxTreeModule();
 	shutdownSyntacticAnalyzerModule();
