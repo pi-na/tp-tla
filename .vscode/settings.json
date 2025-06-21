@@ -3,6 +3,11 @@
         "bisonactions.h": "c",
         "calculator.h": "c",
         "flexactions.h": "c",
-        "__config": "c"
+        "__config": "c",
+        "type.h": "c",
+        "logger.h": "c",
+        "environment.h": "c",
+        "htmlgenerator.h": "c",
+        "compilerstate.h": "c"
     }
 }

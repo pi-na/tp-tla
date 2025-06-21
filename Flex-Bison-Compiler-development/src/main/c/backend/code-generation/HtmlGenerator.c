@@ -98,19 +98,10 @@ static void _generateHtmlPrologue(void) {
         "    <title>Generated from JSON</title>\n"
         "    <style>\n"
         "        body { font-family: Arial, sans-serif; margin: 20px; }\n"
-        "        .json-object { border: 1px solid #ccc; padding: 10px; margin: 5px 0; }\n"
-        "        .json-array { border: 1px solid #999; padding: 10px; margin: 5px 0; }\n"
-        "        .json-pair { margin: 5px 0; }\n"
-        "        .json-key { font-weight: bold; color: #0066cc; }\n"
-        "        .json-value { margin-left: 10px; }\n"
-        "        .json-string { color: #009900; }\n"
-        "        .json-number { color: #cc6600; }\n"
-        "        .json-boolean { color: #cc0066; }\n"
-        "        .json-null { color: #666666; font-style: italic; }\n"
         "    </style>\n"
         "</head>\n"
         "<body>\n"
-        "    <h1>JSON to HTML Conversion</h1>\n"
+        "    <h1>HEADER DEBUG! Eliminame antes de entregar</h1>\n"
     );
 }
 
@@ -124,12 +115,14 @@ static void _generateHtmlEpilogue(void) {
     );
 }
 
+
 /**
  * Genera la indentación para el nivel especificado
  */
 static char * _indentation(const unsigned int level) {
     return indentation(_indentationCharacter, level, _indentationSize);
 }
+
 
 /**
  * Genera output formateado a stdout
@@ -146,110 +139,126 @@ static void _output(const unsigned int indentationLevel, const char * const form
     va_end(arguments);
 }
 
-/**
- * Genera HTML para un par clave-valor
- */
-static void _generatePair(const unsigned int indentationLevel, Pair * pair) {
-    if (!pair) return;
-    
-    _output(indentationLevel, "<div class=\"json-pair\">\n");
-    
-    // Generar la clave
-    _output(indentationLevel + 1, "<span class=\"json-key\">");
-    if (pair->key) {
-        char * keyStr = _keywordToString(pair->key);
-        char * escapedKey = _escapeHtml(keyStr);
-        _output(0, "%s", escapedKey);
-        free(keyStr);
-        free(escapedKey);
-    }
-    _output(0, ":</span>\n");
-    
-    // Generar el valor
-    _output(indentationLevel + 1, "<div class=\"json-value\">\n");
-    _generateValue(indentationLevel + 2, pair->value);
-    _output(indentationLevel + 1, "</div>\n");
-    
-    _output(indentationLevel, "</div>\n");
-}
 
 /**
- * Genera HTML para un array
+ * Genera HTML para el PROGRAM -- PUNTO DE ENTRADA
  */
-static void _generateArray(const unsigned int indentationLevel, Array * array) {
-    if (!array) return;
-    
-    _output(indentationLevel, "<div class=\"json-array\">\n");
-    _output(indentationLevel + 1, "<h3>Array:</h3>\n");
-    
-    ValueList * current = array->values;
-    int index = 0;
-    while (current) {
-        _output(indentationLevel + 1, "<div class=\"array-item\">\n");
-        _output(indentationLevel + 2, "<strong>Item %d:</strong>\n", index);
-        _generateValue(indentationLevel + 2, current->value);
-        _output(indentationLevel + 1, "</div>\n");
-        current = current->next;
-        index++;
-    }
-    
-    _output(indentationLevel, "</div>\n");
+static void _generateProgram(const Program * program) {
+    // El program siempre es un object
+    _generateObject(1, program->object);
 }
 
-/**
- * Genera HTML para un objeto
- */
+
 static void _generateObject(const unsigned int indentationLevel, Object * object) {
-    if (!object) return;
+    // Extraer type, content y atributos del objeto
+    char * tagName = NULL;
+    Value * contentVal = NULL;
+    char * attributesBuffer = NULL;
+    size_t attributesBufferSize = 0;
     
-    _output(indentationLevel, "<div class=\"json-object\">\n");
-    
-    PairList * current = object->pairs;
-    while (current) {
-        _generatePair(indentationLevel + 1, current->pair);
-        current = current->next;
+    // extraer type, content y acumular atributos
+    for(PairList * current = object->pairs; current != NULL; current = current->next) {
+        Pair * pair = current->pair;
+        
+        if (pair->key->type == TYPE) {
+            if (pair->value->type == STRING_VALUE) {
+                tagName = pair->value->data.stringValue;
+            }
+        } else if (pair->key->type == CONTENT) {
+            contentVal = pair->value;
+        } else {
+            char * attrName = TOKEN_STRINGS[pair->key->type];
+            char * attrValue = pair->value->data.stringValue;
+            char * attrString = NULL;
+            
+            // Crear string del atributo
+            if (asprintf(&attrString, " %s=\"%s\"", _toLowerCase(attrName), _escapeHtml(attrValue)) == -1) {
+                logError(_logger, "Failed to allocate memory for attribute string");
+                continue;
+            }
+            
+            // Agregar al buffer
+            size_t newSize = attributesBufferSize + strlen(attrString);
+            char * newBuffer = realloc(attributesBuffer, newSize + 1);
+            if (newBuffer == NULL) {
+                logError(_logger, "Failed to reallocate attributes buffer");
+                free(attrString);
+                continue;
+            }
+            
+            attributesBuffer = newBuffer;
+            strcat(attributesBuffer, attrString);
+            attributesBufferSize = newSize;
+            
+            free(attrString);
+        }
     }
     
-    _output(indentationLevel, "</div>\n");
-}
-
-/**
- * Genera HTML para un valor
- */
-static void _generateValue(const unsigned int indentationLevel, Value * value) {
-    if (!value) {
-        _output(indentationLevel, "<span class=\"json-null\">null</span>\n");
+    if (tagName == NULL) {
+        logError(_logger, "Object missing TYPE field");
+        free(attributesBuffer);
         return;
     }
     
-    switch (value->type) {
-        case STRING_VALUE: {
-            char * escaped = _escapeHtml(value->data.stringValue);
-            _output(indentationLevel, "<span class=\"json-string\">\"%s\"</span>\n", escaped);
-            free(escaped);
-            break;
-        }
-        case NULL_VALUE:
-            _output(indentationLevel, "<span class=\"json-null\">null</span>\n");
-            break;
+    // Generar HTML completo en una sola operación
+    if (attributesBuffer != NULL) {
+        _output(indentationLevel, "<%s%s>\n", tagName, attributesBuffer);
+    } else {
+        _output(indentationLevel, "<%s>\n", tagName);
+    }
+    
+    // Renderizar contenido
+    if (contentVal != NULL) {
+        _generateValue(indentationLevel + 1, contentVal);
+    }
+    
+    // Cerrar tag
+    _output(indentationLevel, "</%s>\n", tagName);
+    
+    // Limpiar buffer
+    free(attributesBuffer);
+}
+
+
+static void generateContent(const unsigned int indentationLevel, Pair * pair) {
+    // Genera el contenido del par
+    switch(pair->value->type) {
         case OBJECT_VALUE:
-            _generateObject(indentationLevel, value->data.objectValue);
+            _generateObject(indentationLevel + 1, pair->value->data.objectValue);
             break;
         case ARRAY_VALUE:
-            _generateArray(indentationLevel, value->data.arrayValue);
-            break;
-        case TOKEN_VALUE:
-            _output(indentationLevel, "<span class=\"json-token\">token</span>\n");
+            _generateArray(indentationLevel + 1, pair->value->data.arrayValue);
             break;
         default:
-            _output(indentationLevel, "<span class=\"json-unknown\">unknown</span>\n");
+            logError(_logger, "Unsupported value type in array: %d", pair->value->type);
             break;
     }
 }
+
+
+static void _generateArray(const unsigned int indentationLevel, Array * array) {
+    // FOR EACH array->values
+    for(ValueList * current = array->values; current != NULL; current = current->next) {
+        switch(current->value->type) {
+            case OBJECT_VALUE:
+                _generateObject(indentationLevel + 1, current->value->data.objectValue);
+                break;
+            case ARRAY_VALUE:
+                _generateArray(indentationLevel + 1, current->value->data.arrayValue);
+                break;
+            default:
+                logError(_logger, "Unsupported value type in array: %d", current->value->type);
+                break;
+            
+        }
+    }
+}
+
 
 void generateHtml(CompilerState * compilerState) {
 	logDebugging(_logger, "Generating final output...");
 	_generateHtmlPrologue();
+    // ->abstractSyntaxTree seria el nodo raiz, tipo Program
 	_generateProgram(compilerState->abstractSyntaxtTree);
 	_generateHtmlEpilogue();
 	logDebugging(_logger, "Generation is done.");

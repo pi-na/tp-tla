@@ -3,7 +3,6 @@
 #include "frontend/syntactic-analysis/BisonActions.h"
 #include "frontend/syntactic-analysis/SyntacticAnalyzer.h"
 #include "shared/CompilerState.h"
-#include "shared/Environment.h"
 #include "shared/Logger.h"
 #include "shared/String.h"
 
