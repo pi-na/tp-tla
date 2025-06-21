@@ -3,6 +3,7 @@
 #include "frontend/syntactic-analysis/BisonActions.h"
 #include "frontend/syntactic-analysis/SyntacticAnalyzer.h"
 #include "backend/domain-specific/JsonProcessor.h"
+#include "backend/code-generation/HtmlGenerator.h"
 #include "shared/CompilerState.h"
 #include "shared/Environment.h"
 #include "shared/Logger.h"
