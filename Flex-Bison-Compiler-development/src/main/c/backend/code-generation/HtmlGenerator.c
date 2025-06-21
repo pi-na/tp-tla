@@ -1,6 +1,7 @@
 #include "HtmlGenerator.h"
 #include "../../shared/Type.h"
 #include "../../frontend/syntactic-analysis/AbstractSyntaxTree.h"
+#include "../syntactic-analysis/BisonParser.h"
 
 /* MODULE INTERNAL STATE */
 
