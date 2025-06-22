@@ -1,0 +1,29 @@
+{
+  "type": "html",
+  "content": {
+    "type": "body",
+    "content": {
+      "type": "ul",
+      "content": {
+        "loop": {
+          "iterable": ["Hola", "Todo", "Bien?"],
+          "iterate": {
+            "type": "li",
+            "content": [
+              {
+              "type": "p",
+              "content": $iterate
+              },
+              {
+                "type": "span",
+                "content": $otraVariable
+                // no permitimos que el user use varias variables distintas del mismo iterable
+                // como por ejemplo querer hacer $iterate[0] e $iterate[1] en el mismo bucle
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+} 

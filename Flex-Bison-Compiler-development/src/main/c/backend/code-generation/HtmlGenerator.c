@@ -114,6 +114,17 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
         // DEBUG: Print token type
         logDebugging(_logger, "Processing pair with key type: %d (TYPE=%d)", pair->key->type, TYPE);
         
+        if (pair->key->type == LOOP) {
+            logDebugging(_logger, "Found LOOP field");
+            if(pair-Value->type != OBJECT_VALUE) {
+                logError(_logger, "Expected OBJECT_VALUE for LOOP, got: %d", pair->value->type);
+                continue;
+            }
+            // en el pair->value hay un object que trae los datos del loop
+            // debo leer ese object, extraer iterable e iterate, y ahi hacer un for-each
+            //TODO
+            continue;
+        }
         if (pair->key->type == TYPE) {
             if (pair->value->type == STRING_VALUE) {
                 tagName = pair->value->data.stringValue;

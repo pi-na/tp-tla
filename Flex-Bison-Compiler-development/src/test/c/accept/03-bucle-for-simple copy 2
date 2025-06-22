@@ -1,0 +1,32 @@
+{
+  "type": "html",
+  "content": {
+    "type": "body",
+    "content": {
+      "type": "ul",
+      "content": {
+        "loop": {
+          "iterable": ["Hola", "Todo", "Bien?"],
+          "iterate": {
+            "type": "div",
+            "content": [
+              {
+                "type": "div",
+                "class": "title",
+                "padding": "10px",
+                "content": {
+                  "type": "h1",
+                  "content": "$iterate"
+                }
+              },
+              {
+                "type": "span",
+                "content": "ejemplo de texto"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+} 
