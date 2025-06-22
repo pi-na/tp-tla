@@ -10,6 +10,18 @@
       "content": $variable1
     },
     {
+      "type": "div",
+      "content": $variable2
+    },
+    {
+      "type": "div",
+      "content": $variable3
+    },
+    {
+      "type": "div",
+      "content": $variable4
+    },
+    {
       "type": "p",
       "content": "Texto con variable definida"
     }

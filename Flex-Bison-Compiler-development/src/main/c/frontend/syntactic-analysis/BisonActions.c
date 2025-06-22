@@ -213,7 +213,7 @@ Value * VariableRefValueSemanticAction(VarRef * varRef) {
                  "Variable '%s' no definida, usando cadena vacía",
                  varRef->name);
         state->succeed = false;
-        resolvedValue = strdup("");
+        resolvedValue = strdup("@@@UNDEFINED VARIABLE@@@");
     }
 
 	free(varRef->name);
