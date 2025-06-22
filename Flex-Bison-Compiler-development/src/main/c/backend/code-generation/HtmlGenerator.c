@@ -150,7 +150,8 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
     // Extraer type, content y atributos del objeto
     char * tagName = NULL;
     Value * contentVal = NULL;
-    char * attributesBuffer = NULL;
+    char * attributesBuffer = malloc(1);
+    attributesBuffer[0] = '\0';
     size_t attributesBufferSize = 0;
     
     // extraer type, content y acumular atributos
@@ -178,21 +179,28 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
             char * attrString = NULL;
             
             // Crear string del atributo
-            if (asprintf(&attrString, " %s=\"%s\"", _toLowerCase(attrName), _escapeHtml(attrValue)) == -1) {
+            char *lower = _toLowerCase(attrName);
+            char *escapedVal = _escapeHtml(attrValue);
+            if (asprintf(&attrString, " %s=\"%s\"", lower, escapedVal) == -1) {
                 logError(_logger, "Failed to allocate memory for attribute string");
                 continue;
             }
+
+            free(lower);
+            free(escapedVal);
             
             // Agregar al buffer
+            
             size_t newSize = attributesBufferSize + strlen(attrString);
             char * newBuffer = realloc(attributesBuffer, newSize + 1);
-            if (newBuffer == NULL) {
+            if (!newBuffer) {
                 logError(_logger, "Failed to reallocate attributes buffer");
                 free(attrString);
                 continue;
             }
             
             attributesBuffer = newBuffer;
+            attributesBuffer[attributesBufferSize] = '\0';
             strcat(attributesBuffer, attrString);
             attributesBufferSize = newSize;
             
@@ -240,7 +248,9 @@ static char* _toLowerCase(const char* s) {
 static void _generateValue(const unsigned int indentationLevel, Value * value) {
     switch (value->type) {
         case STRING_VALUE:
-            _output(indentationLevel, "%s\n", _escapeHtml(value->data.stringValue));
+            char *escaped = _escapeHtml(value->data.stringValue);
+            _output(indentationLevel, "%s\n", escaped);
+            free(escaped);
             break;
         case OBJECT_VALUE:
             _generateObject(indentationLevel, value->data.objectValue);
