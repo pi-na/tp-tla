@@ -44,7 +44,7 @@ Symbol* symbolTableInsert(SymbolTable *table, const char *name, const char *init
 bool symbolTableSetValue(SymbolTable *table,
                          const char *name,
                          const char *newValue) {
-    Symbol *sym = lookup(table, name);
+    Symbol *sym = symbolTableLookup(table, name);
     if (!sym) return false;
     free(sym->value);
     sym->value = newValue ? strdup(newValue) : NULL;

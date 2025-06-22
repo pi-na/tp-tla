@@ -102,6 +102,7 @@ add_executable(Compiler
     src/main/c/shared/Environment.c
     src/main/c/shared/Logger.c
     src/main/c/shared/String.c
+    src/main/c/shared/symbolTable.c
 )
 
 # Ensure the Bison-generated header is found by the compiler.
