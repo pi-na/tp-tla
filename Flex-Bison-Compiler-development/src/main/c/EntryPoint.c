@@ -20,10 +20,18 @@ const int main(const int count, const char ** arguments) {
 	initializeAbstractSyntaxTreeModule();
 	initializeHtmlGeneratorModule();
 	initializeSymbolTableModule();
-
 	SymbolTable * symbolTable = createSymbolTable();
-	//TODO: Recibir ruta relativa por CLI!
-	symbolTableLoadFromFile(symbolTable, "/home/ubuntu/Flex-Bison-Compiler/script/ubuntu/variables.txt");
+
+	if (count < 2) {
+		logError(logger, "Uso: %s <ruta_tabla_simbolos> [otros argumentos...]", arguments[0]);
+	}
+
+	const char * symbolsPath = arguments[1];
+    logDebugging(logger, "Symbols file path from CLI: %s", symbolsPath);
+
+	if(!symbolTableLoadFromFile(symbolTable, "/home/ubuntu/Flex-Bison-Compiler/script/ubuntu/variables.txt")){
+		logError(logger, "Error cargando símbolos desde '%s'", symbolsPath);
+	}
 	
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
