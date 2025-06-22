@@ -1,5 +1,5 @@
-#include "symbolTable.h"
 #include "Logger.h"
+#include "symbolTable.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
