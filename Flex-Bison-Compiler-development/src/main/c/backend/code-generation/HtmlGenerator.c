@@ -116,7 +116,7 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
         
         if (pair->key->type == LOOP) {
             logDebugging(_logger, "Found LOOP field");
-            if(pair-Value->type != OBJECT_VALUE) {
+            if(pair->value->type != OBJECT_VALUE) {
                 logError(_logger, "Expected OBJECT_VALUE for LOOP, got: %d", pair->value->type);
                 continue;
             }
