@@ -95,24 +95,22 @@ static char * _escapeHtml(const char * input) {
 static void _generateHtmlPrologue(void) {
     _output(0,
       "<!DOCTYPE html>\n"
-      "<html lang=\"en\">\n"
       "<head>\n"
       "  <meta charset=\"UTF-8\">\n"
       "  <title>Salida TP</title>\n"
       "</head>\n"
-      "<body>"
     );
 }
 
 /**
  * Crea el epílogo del HTML generado
  */
-static void _generateHtmlEpilogue(void) {
-    _output(0, "%s",
-        "</body>\n"
-        "</html>\n"
-    );
-}
+// static void _generateHtmlEpilogue(void) {
+//     _output(0, "%s",
+//         "</body>\n"
+//         "</html>\n"
+//     );
+// }
 
 
 /**
@@ -298,7 +296,7 @@ void generateHtml(CompilerState * compilerState) {
 	_generateHtmlPrologue();
     // ->abstractSyntaxTree seria el nodo raiz, tipo Program
 	_generateProgram(compilerState->abstractSyntaxtTree);
-	_generateHtmlEpilogue();
+	// _generateHtmlEpilogue();
 	logDebugging(_logger, "Generation is done.");
 }
 
