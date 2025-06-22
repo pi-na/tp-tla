@@ -1,3 +1,4 @@
+
 #include "BisonActions.h"
 #include <string.h>
 
@@ -200,18 +201,31 @@ Value * ArrayValueSemanticAction(Array * array) {
 // action que se ejecuta para un $identifier, en contexto de un value
 // recordar VarRef es simplemente char* name
 Value * VariableRefValueSemanticAction(VarRef * varRef) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
+    _logSyntacticAnalyzerAction(__FUNCTION__);
 
-	if(symbolTableLookup(_currentState->symbolTable, varRef->name) == NULL) {
-		logError(_logger, "Variable '%s' is not defined.", varRef->name);
-		_currentState->succeed = false;
-	}
+    // 1) Obtenemos el estado actual del compilador
+    CompilerState *state = currentCompilerState();
 
-	Value * val = calloc(1, sizeof(Value));
-	val->type = VAR_REF_VALUE;
-	val->data.varRefValue = varRef;
-	return val;
+    // 2) Intentamos resolver la variable en la tabla
+    char *resolvedValue;
+    if (!symbolTableGetValue(state->symbolTable, varRef->name, &resolvedValue)) {
+        logError(_logger,
+                 "Variable '%s' no definida, usando cadena vacía",
+                 varRef->name);
+        state->succeed = false;
+        resolvedValue = strdup("");
+    }
+
+	free(varRef->name);
+   	free(varRef);
+
+    // 3) Construimos un nodo STRING_VALUE con el texto resuelto
+    Value *val = calloc(1, sizeof(Value));
+    val->type = STRING_VALUE;
+    val->data.stringValue = resolvedValue;
+    return val;
 }
+
 
 Array * ArraySemanticAction(ValueList * values) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
@@ -253,6 +267,4 @@ VarRef * VariableRefSemanticAction(char * name) {
 	varRef->name = name;
 	return varRef;
 }
-
-
 
