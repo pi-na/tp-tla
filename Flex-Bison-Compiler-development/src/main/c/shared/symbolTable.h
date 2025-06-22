@@ -14,6 +14,9 @@ typedef struct SymbolTable {
     Symbol *head;
 } SymbolTable;
 
+void initializeSymbolTableModule();
+void shutdownSymbolTableModule();
+
 SymbolTable* createSymbolTable(void);
 void         destroySymbolTable(SymbolTable *table);
 bool symbolTableLoadFromFile(SymbolTable *table, const char *filename);

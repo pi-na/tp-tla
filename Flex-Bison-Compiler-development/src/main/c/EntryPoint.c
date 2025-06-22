@@ -19,9 +19,11 @@ const int main(const int count, const char ** arguments) {
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
 	initializeHtmlGeneratorModule();
+	initializeSymbolTableModule();
+
 	SymbolTable * symbolTable = createSymbolTable();
 	//TODO: Recibir ruta relativa por CLI!
-	symbolTableLoadFromFile(symbolTable, "variables.txt");
+	symbolTableLoadFromFile(symbolTable, "/home/ubuntu/Flex-Bison-Compiler/script/ubuntu/variables.txt");
 	
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
@@ -54,8 +56,9 @@ const int main(const int count, const char ** arguments) {
 	shutdownSyntacticAnalyzerModule();
 	shutdownBisonActionsModule();
 	shutdownFlexActionsModule();
+	shutdownSymbolTableModule();
+	destroySymbolTable(compilerState.symbolTable);
 	logDebugging(logger, "Compilation is done.");
 	destroyLogger(logger);
-	destroySymbolTable(compilerState.symbolTable);
 	return compilationStatus;
 }

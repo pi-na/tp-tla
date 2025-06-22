@@ -8,11 +8,13 @@
 
 static Logger * _logger = NULL;
 
-void initializeHtmlGeneratorModule() {
+void initializeSymbolTableModule() {
     _logger = createLogger("SymbolTable");
+    _logger->loggingLevel = DEBUGGING;
+    logDebugging(_logger, "SymbolTable module initialized.");
 }
 
-void shutdownHtmlGeneratorModule() {
+void shutdownSymbolTableModule() {
     if (_logger != NULL) {
         destroyLogger(_logger);
     }
@@ -38,29 +40,36 @@ void destroySymbolTable(SymbolTable *table) {
 }
 
 bool symbolTableLoadFromFile(SymbolTable *table, const char *filename) {
+    logDebugging(_logger, "symbolTableLoadFromFile for file %s", filename);
+
     if (!table || !filename || filename[0] == '\0') {
-        // tabla o nombre inválido
+        logError(_logger, "Invalid parameters for symbolTableLoadFromFile!");
         return false;
     }
 
     // Canonizar a ruta absoluta
     char abs_path[PATH_MAX];
     if (!realpath(filename, abs_path)) {
-        // no existe o permiso denegado
+        logError(_logger, "Failed to resolve absolute path for file: %s", filename);
         return false;
     }
 
+    logDebugging(_logger, "File: %s", abs_path);
+
     // Validar permisos de acceso
     if (access(abs_path, R_OK) != 0) {
+        logError(_logger, "Cannot read file: %s - check file permissions", abs_path);
         return false;
     }
 
     // abrir el archivo ya con ruta absoluta validada
     FILE *file = fopen(abs_path, "r");
     if (!file) {
+        logError(_logger, "Failed to open file: %s", abs_path);
         return false;
     }
 
+    logDebugging(_logger, "File: %s opened succesfully. Now loading symbols...", abs_path);
     char name[256];
     char value[256];
     while (fscanf(file, "%255s %255s", name, value) == 2) {

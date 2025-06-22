@@ -7,7 +7,7 @@
     },
     {
       "type": "div",
-      "content": "$variable1"
+      "content": $variable1
     },
     {
       "type": "p",
