@@ -203,10 +203,8 @@ Value * ArrayValueSemanticAction(Array * array) {
 Value * VariableRefValueSemanticAction(VarRef * varRef) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
 
-    // 1) Obtenemos el estado actual del compilador
     CompilerState *state = currentCompilerState();
 
-    // 2) Intentamos resolver la variable en la tabla
     char *resolvedValue;
     if (!symbolTableGetValue(state->symbolTable, varRef->name, &resolvedValue)) {
         logError(_logger,
@@ -219,7 +217,6 @@ Value * VariableRefValueSemanticAction(VarRef * varRef) {
 	free(varRef->name);
    	free(varRef);
 
-    // 3) Construimos un nodo STRING_VALUE con el texto resuelto
     Value *val = calloc(1, sizeof(Value));
     val->type = STRING_VALUE;
     val->data.stringValue = resolvedValue;
