@@ -23,47 +23,6 @@ static struct {
 } variables[MAX_VARIABLES];
 static int variableCount = 0;
 
-static void defineVariable(const char* name) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			variables[i].isDefined = true;
-			return;
-		}
-	}
-	if (variableCount < MAX_VARIABLES) {
-		variables[variableCount].name = strdup(name);
-		variables[variableCount].isDefined = true;
-		variables[variableCount].isBeingResolved = false;
-		variableCount++;
-	}
-}
-
-static boolean isVariableDefined(const char* name) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			return variables[i].isDefined;
-		}
-	}
-	return false;
-}
-
-static boolean isVariableBeingResolved(const char* name) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			return variables[i].isBeingResolved;
-		}
-	}
-	return false;
-}
-
-static void setVariableResolutionStatus(const char* name, boolean status) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			variables[i].isBeingResolved = status;
-			return;
-		}
-	}
-}
 
 static void clearVariables() {
 	for (int i = 0; i < variableCount; i++) {
