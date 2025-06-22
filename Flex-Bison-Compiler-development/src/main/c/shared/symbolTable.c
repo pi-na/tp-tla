@@ -1,10 +1,22 @@
 #include "symbolTable.h"
+#include "Logger.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>   // PATH_MAX
 #include <unistd.h>   // realpath
 
+static Logger * _logger = NULL;
+
+void initializeHtmlGeneratorModule() {
+    _logger = createLogger("SymbolTable");
+}
+
+void shutdownHtmlGeneratorModule() {
+    if (_logger != NULL) {
+        destroyLogger(_logger);
+    }
+}
 
 SymbolTable* createSymbolTable(void) {
     SymbolTable *table = calloc(1, sizeof(SymbolTable));
@@ -57,6 +69,7 @@ bool symbolTableLoadFromFile(SymbolTable *table, const char *filename) {
             fclose(file);
             return false;
         }
+        logDebugging(_logger, "Loaded symbol: %s = %s", name, value);
     }
 
     fclose(file);
@@ -64,9 +77,12 @@ bool symbolTableLoadFromFile(SymbolTable *table, const char *filename) {
 }
 
 Symbol* symbolTableLookup(SymbolTable *table, const char *name) {
+    if (!table || !name || strlen(name) == 0 || table->head == NULL) return NULL;
+
     for (Symbol *s = table->head; s; s = s->next) {
         if (strcmp(s->name, name) == 0) return s;
     }
+
     return NULL;
 }
 
