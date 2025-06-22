@@ -137,7 +137,42 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
         } else if (pair->key->type == CONTENT) {
             contentVal = pair->value;
             logDebugging(_logger, "Found CONTENT field");
-        } else {
+        } else if (pair->key->type == STYLE) {
+        // ==> Nueva rama para inline styles
+            if (pair->value->type == OBJECT_VALUE) {
+                Object *styleObj = pair->value->data.objectValue;
+            // Buffer para ir concatenando "prop:valor;"
+                size_t cssBufSize = 0;
+                char *cssBuf = malloc(1);
+                cssBuf[0] = '\0';
+                for (PairList *sp = styleObj->pairs; sp; sp = sp->next) {
+                    Pair *stylePair = sp->pair;
+                    const char *prop = _tokenToString(stylePair->key->type);
+                    const char *val = stylePair->value->data.stringValue;
+                    char *fragment;
+                // arma "prop:val;"`
+                    if (asprintf(&fragment, "%s:%s;", prop, val) == -1) continue;
+                    size_t fragLen = strlen(fragment);
+                    cssBuf = realloc(cssBuf, cssBufSize + fragLen + 1);
+                    memcpy(cssBuf + cssBufSize, fragment, fragLen);
+                    cssBufSize += fragLen;
+                    cssBuf[cssBufSize] = '\0';
+                    free(fragment);
+                }
+            // monta el atributo style="…"
+                char *attrString;
+                if (asprintf(&attrString, " style=\"%s\"", cssBuf) != -1) {
+                size_t newSize = attributesBufferSize + strlen(attrString);
+                attributesBuffer = realloc(attributesBuffer, newSize + 1);
+                strcpy(attributesBuffer + attributesBufferSize, attrString);
+                attributesBufferSize = newSize;
+                free(attrString);
+                }
+                free(cssBuf);
+            // no caigas en el bloque genérico
+                continue;
+            } 
+        }else {
             const char * attrName = _tokenToString(pair->key->type);
             char * attrValue = pair->value->data.stringValue;
             char * attrString = NULL;
