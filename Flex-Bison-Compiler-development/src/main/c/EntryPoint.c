@@ -19,7 +19,10 @@ const int main(const int count, const char ** arguments) {
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
 	initializeHtmlGeneratorModule();
-
+	SymbolTable * symbolTable = createSymbolTable();
+	//TODO: Recibir ruta relativa por CLI!
+	symbolTableLoadFromFile(symbolTable, "variables.txt");
+	
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
 		logDebugging(logger, "Argument %d: \"%s\"", k, arguments[k]);
@@ -30,7 +33,7 @@ const int main(const int count, const char ** arguments) {
 		.abstractSyntaxtTree = NULL,
 		.succeed = false,
 		.value = 0,
-		.symbolTable = createSymbolTable()
+		.symbolTable = symbolTable
 	};
 	const SyntacticAnalysisStatus syntacticAnalysisStatus = parse(&compilerState);
 	CompilationStatus compilationStatus = SUCCEED;

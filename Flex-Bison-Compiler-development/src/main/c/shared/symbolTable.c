@@ -1,6 +1,10 @@
 #include "symbolTable.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <limits.h>   // PATH_MAX
+#include <unistd.h>   // realpath
+
 
 SymbolTable* createSymbolTable(void) {
     SymbolTable *table = calloc(1, sizeof(SymbolTable));
@@ -19,6 +23,44 @@ void destroySymbolTable(SymbolTable *table) {
         cur = next;
     }
     free(table);
+}
+
+bool symbolTableLoadFromFile(SymbolTable *table, const char *filename) {
+    if (!table || !filename || filename[0] == '\0') {
+        // tabla o nombre inválido
+        return false;
+    }
+
+    // Canonizar a ruta absoluta
+    char abs_path[PATH_MAX];
+    if (!realpath(filename, abs_path)) {
+        // no existe o permiso denegado
+        return false;
+    }
+
+    // Validar permisos de acceso
+    if (access(abs_path, R_OK) != 0) {
+        return false;
+    }
+
+    // abrir el archivo ya con ruta absoluta validada
+    FILE *file = fopen(abs_path, "r");
+    if (!file) {
+        return false;
+    }
+
+    char name[256];
+    char value[256];
+    while (fscanf(file, "%255s %255s", name, value) == 2) {
+        Symbol *sym = symbolTableInsert(table, name, value);
+        if (!sym) {
+            fclose(file);
+            return false;
+        }
+    }
+
+    fclose(file);
+    return true;
 }
 
 Symbol* symbolTableLookup(SymbolTable *table, const char *name) {

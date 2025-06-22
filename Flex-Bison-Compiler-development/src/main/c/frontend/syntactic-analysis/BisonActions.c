@@ -197,8 +197,16 @@ Value * ArrayValueSemanticAction(Array * array) {
 	return val;
 }
 
+// action que se ejecuta para un $identifier, en contexto de un value
+// recordar VarRef es simplemente char* name
 Value * VariableRefValueSemanticAction(VarRef * varRef) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+
+	if(symbolTableLookup(_currentState->symbolTable, varRef->name) == NULL) {
+		logError(_logger, "Variable '%s' is not defined.", varRef->name);
+		_currentState->succeed = false;
+	}
+
 	Value * val = calloc(1, sizeof(Value));
 	val->type = VAR_REF_VALUE;
 	val->data.varRefValue = varRef;
@@ -238,7 +246,7 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 	return valueList;
 }
 
-
+// action que se ejecuta si encuentro variable $identifier
 VarRef * VariableRefSemanticAction(char * name) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	VarRef * varRef = calloc(1, sizeof(VarRef));
