@@ -29,7 +29,6 @@ static void _generateArray(const unsigned int indentationLevel, Array * array);
 static void _generatePair(const unsigned int indentationLevel, Pair * pair);
 static char * _indentation(const unsigned int level);
 static void _output(const unsigned int indentationLevel, const char * const format, ...);
-static char * _escapeHtml(const char * input);
 static char * _keywordToString(Keyword * keyword);
 static char * _toLowerCase(const char * s);
 static char * _tokenToString(int tokenValue);
@@ -46,48 +45,6 @@ static char * _keywordToString(Keyword * keyword) {
     return strdup("keyword");
 }
 
-/**
- * Escapa caracteres HTML especiales
- */
-static char * _escapeHtml(const char * input) {
-    if (!input) return strdup("");
-    
-    size_t len = strlen(input);
-    size_t newLen = len * 6 + 1; // Peor caso: todos los caracteres necesitan escape
-    char * escaped = malloc(newLen);
-    char * ptr = escaped;
-    
-    for (size_t i = 0; i < len; i++) {
-        switch (input[i]) {
-            case '<':
-                strcpy(ptr, "&lt;");
-                ptr += 4;
-                break;
-            case '>':
-                strcpy(ptr, "&gt;");
-                ptr += 4;
-                break;
-            case '&':
-                strcpy(ptr, "&amp;");
-                ptr += 5;
-                break;
-            case '"':
-                strcpy(ptr, "&quot;");
-                ptr += 6;
-                break;
-            case '\'':
-                strcpy(ptr, "&#39;");
-                ptr += 5;
-                break;
-            default:
-                *ptr++ = input[i];
-                break;
-        }
-    }
-    *ptr = '\0';
-    
-    return escaped;
-}
 
 /**
  * Crea el prólogo del HTML generado
@@ -95,10 +52,6 @@ static char * _escapeHtml(const char * input) {
 static void _generateHtmlPrologue(void) {
     _output(0,
       "<!DOCTYPE html>\n"
-      "<head>\n"
-      "  <meta charset=\"UTF-8\">\n"
-      "  <title>Salida TP</title>\n"
-      "</head>\n"
     );
 }
 
@@ -180,14 +133,12 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
             
             // Crear string del atributo
             char *lower = _toLowerCase(attrName);
-            char *escapedVal = _escapeHtml(attrValue);
-            if (asprintf(&attrString, " %s=\"%s\"", lower, escapedVal) == -1) {
+            if (asprintf(&attrString, " %s=\"%s\"", lower, attrValue) == -1) {
                 logError(_logger, "Failed to allocate memory for attribute string");
                 continue;
             }
 
             free(lower);
-            free(escapedVal);
             
             // Agregar al buffer
             
@@ -248,9 +199,7 @@ static char* _toLowerCase(const char* s) {
 static void _generateValue(const unsigned int indentationLevel, Value * value) {
     switch (value->type) {
         case STRING_VALUE:
-            char *escaped = _escapeHtml(value->data.stringValue);
-            _output(indentationLevel, "%s\n", escaped);
-            free(escaped);
+            _output(indentationLevel, "%s\n", value->data.stringValue);
             break;
         case OBJECT_VALUE:
             _generateObject(indentationLevel, value->data.objectValue);
@@ -320,7 +269,7 @@ static char * _tokenToString(int tokenValue) {
         case SRC: return "src";
         case ALT: return "alt";
         case BODY: return "body";
-        case REF: return "ref";
+        case REF: return "href";
         case H1: return "h1";
         case H2: return "h2";
         case H3: return "h3";
