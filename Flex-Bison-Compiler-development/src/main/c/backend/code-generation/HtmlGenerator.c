@@ -7,6 +7,7 @@
 
 const char _indentationCharacter = ' ';
 const char _indentationSize = 2;
+CompilerState * _compilerState = NULL; 
 static Logger * _logger = NULL;
 
 void initializeHtmlGeneratorModule() {
@@ -114,16 +115,70 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
         // DEBUG: Print token type
         logDebugging(_logger, "Processing pair with key type: %d (TYPE=%d)", pair->key->type, TYPE);
         
+        // TODO: Procesar loop en otra funcion!
         if (pair->key->type == LOOP) {
             logDebugging(_logger, "Found LOOP field");
+
+            long flag_ok = 1;
+            long iterable_count = 0;
+            Object * iterate; 
+
             if(pair->value->type != OBJECT_VALUE) {
                 logError(_logger, "Expected OBJECT_VALUE for LOOP, got: %d", pair->value->type);
                 continue;
             }
+
             // en el pair->value hay un object que trae los datos del loop
             // debo leer ese object, extraer iterable e iterate, y ahi hacer un for-each
-            //TODO
-            continue;
+            for(PairList * pairList = pair->value->data.objectValue->pairs; pairList != NULL; pairList = pairList->next) {
+                Pair * pair = pairList->pair;
+
+                if (pair->key->type == ITERABLE) {
+                    logDebugging(_logger, "Found ITERABLE field");
+                    
+                    if (pair->value->type != ARRAY_VALUE) {
+                        logError(_logger, "Expected ARRAY_VALUE for ITERABLE, got: %d", pair->value->type);
+                        continue;
+                    }
+
+                    Array * iterableArray = pair->value->data.arrayValue;
+                    for(ValueList * currentValue = iterableArray->values; currentValue != NULL; currentValue = currentValue->next) {
+                        Value * value = currentValue->value;
+
+                        if(value->type != STRING_VALUE) {
+                            logError(_logger, "Invalid type for iterable array value: %d", value->type);
+                            continue;
+                        }
+
+                        logDebugging(_logger, "Processing iterable value: %s", value->data.stringValue);
+                        //TODO: PUSHEAR VARIABLES EN ORDEN INVERSO!
+                        symbolTableInsert(
+                            _compilerState->symbolTable,
+                            "ITERATOR_REF",
+                            value->data.stringValue
+                        );
+                        iterable_count++;
+                    }
+                } else if (pair->key->type == ITERATE) {
+                    logDebugging(_logger, "Found ITERATE field");
+                    iterate = pair->value->data.objectValue;
+                    // iterate es un object comun y corriente
+                    // debo generar ese object tantas veces como elementos tenga el iterable
+                } else {
+                    flag_ok = 0;
+                }
+            }
+
+            if(!flag_ok) {
+                logError(_logger, "Invalid LOOP structure, missing ITERABLE or ITERATE fields");
+                continue;
+            }
+
+            for(int i = 0; i < iterable_count; i++) {
+                // llamo a generateObject con el object iterate
+                // y le paso el nivel de indentación incrementado
+                // popeo cada "ITERATOR_REF"
+            }
         }
         if (pair->key->type == TYPE) {
             if (pair->value->type == STRING_VALUE) {
@@ -298,6 +353,7 @@ static void _generateArray(const unsigned int indentationLevel, Array * array) {
 
 void generateHtml(CompilerState * compilerState) {
 	logDebugging(_logger, "Generating final output...");
+    _compilerState = compilerState;
 	_generateHtmlPrologue();
     // ->abstractSyntaxTree seria el nodo raiz, tipo Program
 	_generateProgram(compilerState->abstractSyntaxtTree);
