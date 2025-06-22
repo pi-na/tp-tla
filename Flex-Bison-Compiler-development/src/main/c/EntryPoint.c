@@ -5,6 +5,7 @@
 #include "shared/CompilerState.h"
 #include "shared/Logger.h"
 #include "shared/String.h"
+#include "shared/symbolTable.h"
 
 /**
  * The main entry-point of the entire application. If you use "strtok" to
@@ -28,7 +29,8 @@ const int main(const int count, const char ** arguments) {
 	CompilerState compilerState = {
 		.abstractSyntaxtTree = NULL,
 		.succeed = false,
-		.value = 0
+		.value = 0,
+		.symbolTable = createSymbolTable()
 	};
 	const SyntacticAnalysisStatus syntacticAnalysisStatus = parse(&compilerState);
 	CompilationStatus compilationStatus = SUCCEED;
@@ -51,5 +53,6 @@ const int main(const int count, const char ** arguments) {
 	shutdownFlexActionsModule();
 	logDebugging(logger, "Compilation is done.");
 	destroyLogger(logger);
+	destroySymbolTable(compilerState.symbolTable);
 	return compilationStatus;
 }
