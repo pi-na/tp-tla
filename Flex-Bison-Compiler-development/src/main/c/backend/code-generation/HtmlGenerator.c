@@ -121,7 +121,7 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
 
             long flag_ok = 1;
             long iterable_count = 0;
-            Object * iterate; 
+            Object * iterate = NULL; 
 
             if(pair->value->type != OBJECT_VALUE) {
                 logError(_logger, "Expected OBJECT_VALUE for LOOP, got: %d", pair->value->type);
@@ -131,17 +131,18 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
             // en el pair->value hay un object que trae los datos del loop
             // debo leer ese object, extraer iterable e iterate, y ahi hacer un for-each
             for(PairList * pairList = pair->value->data.objectValue->pairs; pairList != NULL; pairList = pairList->next) {
-                Pair * pair = pairList->pair;
+                Pair * p2 = pairList->pair;
 
-                if (pair->key->type == ITERABLE) {
+
+                if (p2->key->type == ITERABLE) {
                     logDebugging(_logger, "Found ITERABLE field");
                     
-                    if (pair->value->type != ARRAY_VALUE) {
+                    if (p2->value->type != ARRAY_VALUE) {
                         logError(_logger, "Expected ARRAY_VALUE for ITERABLE, got: %d", pair->value->type);
                         continue;
                     }
 
-                    Array * iterableArray = pair->value->data.arrayValue;
+                    Array * iterableArray = p2->value->data.arrayValue;
                     for(ValueList * currentValue = iterableArray->values; currentValue != NULL; currentValue = currentValue->next) {
                         Value * value = currentValue->value;
 
@@ -159,12 +160,10 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
                         );
                         iterable_count++;
                     }
-                } else if (pair->key->type == ITERATE) {
+                } else if (p2->key->type == ITERATE) {
                     logDebugging(_logger, "Found ITERATE field");
-                    iterate = pair->value->data.objectValue;
-                    // iterate es un object comun y corriente
-                    // debo generar ese object tantas veces como elementos tenga el iterable
-                } else {
+                    iterate = p2->value->data.objectValue;
+                }else {
                     flag_ok = 0;
                 }
             }
@@ -174,12 +173,28 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
                 continue;
             }
 
-            for(int i = 0; i < iterable_count; i++) {
-                // llamo a generateObject con el object iterate
-                // y le paso el nivel de indentación incrementado
-                // popeo cada "ITERATOR_REF"
+            if (!iterate) {
+                logError(_logger, "No template (ITERATE) para LOOP");
+                free(attributesBuffer);
+                continue;
             }
+
+            for (int i = 0; i < iterable_count; i++) {
+                 // 1) Genera ese <li>…</li> llamando recursivamente
+                _generateObject(indentationLevel + 1, iterate);
+
+                  // 2) Saca el valor de la pila
+                char * popped_value = NULL;
+                if (!symbolTablePop(_compilerState->symbolTable, &popped_value)) {
+                logError(_logger, "Failed to pop iterator-ref");
+                    }
+                free(popped_value);
+            }
+            free(attributesBuffer);
+            return;
         }
+        
+
         if (pair->key->type == TYPE) {
             if (pair->value->type == STRING_VALUE) {
                 tagName = pair->value->data.stringValue;
@@ -302,6 +317,24 @@ static void _generateValue(const unsigned int indentationLevel, Value * value) {
         case STRING_VALUE:
             _output(indentationLevel, "%s\n", value->data.stringValue);
             break;
+         case TOKEN_VALUE: {
+            if (value->data.tokenValue == ITERATOR_REF) {
+                char *iterVal = NULL;
+                if (symbolTableGetValue(_compilerState->symbolTable,
+                                        "ITERATOR_REF",
+                                        &iterVal)) {
+                    _output(indentationLevel, "%s\n", iterVal);
+                    free(iterVal);
+                } else {
+                    _output(indentationLevel, "\n");
+                }
+            } else {
+                // Si quisieras imprimir otros tokens crudos:
+                const char *s = _tokenToString(value->data.tokenValue);
+                _output(indentationLevel, "%s\n", s ? s : "");
+            }
+            break;
+        }
         case OBJECT_VALUE:
             _generateObject(indentationLevel, value->data.objectValue);
             break;
