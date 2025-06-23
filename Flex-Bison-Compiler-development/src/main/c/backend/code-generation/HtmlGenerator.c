@@ -193,10 +193,8 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
             contentVal = pair->value;
             logDebugging(_logger, "Found CONTENT field");
         } else if (pair->key->type == STYLE) {
-        // ==> Nueva rama para inline styles
             if (pair->value->type == OBJECT_VALUE) {
                 Object *styleObj = pair->value->data.objectValue;
-            // Buffer para ir concatenando "prop:valor;"
                 size_t cssBufSize = 0;
                 char *cssBuf = malloc(1);
                 cssBuf[0] = '\0';
@@ -205,7 +203,6 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
                     const char *prop = _tokenToString(stylePair->key->type);
                     const char *val = stylePair->value->data.stringValue;
                     char *fragment;
-                // arma "prop:val;"`
                     if (asprintf(&fragment, "%s:%s;", prop, val) == -1) continue;
                     size_t fragLen = strlen(fragment);
                     cssBuf = realloc(cssBuf, cssBufSize + fragLen + 1);
@@ -214,7 +211,6 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
                     cssBuf[cssBufSize] = '\0';
                     free(fragment);
                 }
-            // monta el atributo style="…"
                 char *attrString;
                 if (asprintf(&attrString, " style=\"%s\"", cssBuf) != -1) {
                 size_t newSize = attributesBufferSize + strlen(attrString);
@@ -224,7 +220,6 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
                 free(attrString);
                 }
                 free(cssBuf);
-            // no caigas en el bloque genérico
                 continue;
             } 
         }else {
