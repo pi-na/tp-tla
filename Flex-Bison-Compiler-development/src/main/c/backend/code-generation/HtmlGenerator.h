@@ -74,7 +74,6 @@ static const char *TOKEN_STRINGS[] = {
 void initializeHtmlGeneratorModule();
 void shutdownHtmlGeneratorModule();
 void generateHtml(CompilerState * compilerState);
-
-
+void setHtmlOutputFile(const char *filePath);
 
 #endif

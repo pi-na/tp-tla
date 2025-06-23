@@ -9,19 +9,7 @@ const char _indentationCharacter = ' ';
 const char _indentationSize = 2;
 CompilerState * _compilerState = NULL; 
 static Logger * _logger = NULL;
-
-
-void initializeHtmlGeneratorModule() {
-    _logger = createLogger("HtmlGenerator");
-}
-
-void shutdownHtmlGeneratorModule() {
-    if (_logger != NULL) {
-        destroyLogger(_logger);
-    }
-}
-
-/** PRIVATE FUNCTIONS */
+static FILE * _file_stream = NULL;
 
 static void _generateHtmlPrologue(void);
 static void _generateHtmlEpilogue(void);
@@ -35,6 +23,42 @@ static char * _keywordToString(Keyword * keyword);
 static char * _toLowerCase(const char * s);
 static char * _tokenToString(int tokenValue);
 
+void initializeHtmlGeneratorModule(const char *outputPath) {
+    _logger = createLogger("HtmlGenerator");
+    setHtmlOutputFile(outputPath);
+}
+
+void shutdownHtmlGeneratorModule() {
+     if (_file_stream && _file_stream != stdout) {
+        logDebugging(_logger,
+                     "Closing HTML output file.");
+        fclose(_file_stream);
+        _file_stream = NULL;
+    }
+    if (_logger != NULL) {
+        destroyLogger(_logger);
+    }
+}
+
+/**
+ * Abre el fichero de salida para volcar el HTML.
+ * Si falla, deja stdout como fallback.
+ */
+void setHtmlOutputFile(const char *filePath) {
+    if (_file_stream && _file_stream != stdout) {
+        fclose(_file_stream);
+    }
+    _file_stream = fopen(filePath, "w");
+    if (!_file_stream) {
+        logError(_logger,
+                 "Cannot open HTML output file \"%s\": %s",
+                 filePath);
+        _file_stream = stdout;
+    } else {
+        logDebugging(_logger,
+                     "Opened HTML output file: %s", filePath);
+    }
+}
 
 /**
  * Convierte una keyword a string
@@ -77,19 +101,26 @@ static char * _indentation(const unsigned int level) {
 
 
 /**
- * Genera output formateado a stdout
+ * Genera output formateado a `stream`
  */
-static void _output(const unsigned int indentationLevel, const char * const format, ...) {
-    va_list arguments;
-    va_start(arguments, format);
-    char * indentationStr = _indentation(indentationLevel);
-    char * effectiveFormat = concatenate(2, indentationStr, format);
-    vfprintf(stdout, effectiveFormat, arguments);
-    fflush(stdout);
+static void _output(const unsigned int indentationLevel,
+                    const char * const format,
+                    ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    char *indentationStr   = _indentation(indentationLevel);
+    char *effectiveFormat  = concatenate(2, indentationStr, format);
+
+    vfprintf(_file_stream, effectiveFormat, args);
+    fflush(_file_stream);
+
     free(effectiveFormat);
     free(indentationStr);
-    va_end(arguments);
+    va_end(args);
 }
+
 
 
 /**

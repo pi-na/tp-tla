@@ -18,7 +18,6 @@ const int main(const int count, const char ** arguments) {
 	initializeBisonActionsModule();
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
-	initializeHtmlGeneratorModule();
 	initializeSymbolTableModule();
 	SymbolTable * symbolTable = createSymbolTable();
 
@@ -27,12 +26,14 @@ const int main(const int count, const char ** arguments) {
 	}
 
 	const char * symbolsPath = arguments[1];
-    logDebugging(logger, "Symbols file path from CLI: %s", symbolsPath);
+	const char * outputPath = arguments[2];
+
+	initializeHtmlGeneratorModule(outputPath);
 
 	if(!symbolTableLoadFromFile(symbolTable, symbolsPath)){
 		logError(logger, "Error cargando símbolos desde '%s'", symbolsPath);
 	}
-	
+
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
 		logDebugging(logger, "Argument %d: \"%s\"", k, arguments[k]);
@@ -48,6 +49,7 @@ const int main(const int count, const char ** arguments) {
 	const SyntacticAnalysisStatus syntacticAnalysisStatus = parse(&compilerState);
 	CompilationStatus compilationStatus = SUCCEED;
 	Program * program = compilerState.abstractSyntaxtTree;
+
 	if (syntacticAnalysisStatus == ACCEPT) {
 		logDebugging(logger, "Generating code...");
 		generateHtml(&compilerState);
@@ -56,6 +58,7 @@ const int main(const int count, const char ** arguments) {
 		logError(logger, "The syntactic-analysis phase rejects the input program.");
 		compilationStatus = FAILED;
 	}
+
 	logDebugging(logger, "Releasing AST resources...");
 	releaseProgram(program);
 	logDebugging(logger, "Releasing modules resources...");
