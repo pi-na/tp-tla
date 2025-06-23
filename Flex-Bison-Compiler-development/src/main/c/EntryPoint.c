@@ -23,13 +23,13 @@ const int main(const int count, const char ** arguments) {
 	SymbolTable * symbolTable = createSymbolTable();
 
 	if (count < 2) {
-		logError(logger, "Uso: %s <ruta_tabla_simbolos> [otros argumentos...]", arguments[0]);
+		logError(logger, "Uso: %s <ruta_lista_de_simbolos> <ruta_archivo_de_salida>", arguments[0]);
 	}
 
 	const char * symbolsPath = arguments[1];
     logDebugging(logger, "Symbols file path from CLI: %s", symbolsPath);
 
-	if(!symbolTableLoadFromFile(symbolTable, "/home/ubuntu/Flex-Bison-Compiler/script/ubuntu/variables.txt")){
+	if(!symbolTableLoadFromFile(symbolTable, symbolsPath)){
 		logError(logger, "Error cargando símbolos desde '%s'", symbolsPath);
 	}
 	
