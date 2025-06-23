@@ -124,16 +124,6 @@ Symbol* symbolTablePush(SymbolTable *table, const char *name, const char *initia
     return sym;
 }
 
-bool symbolTableSetValue(SymbolTable *table,
-                         const char *name,
-                         const char *newValue) {
-    Symbol *sym = symbolTableLookup(table, name);
-    if (!sym) return false;
-    free(sym->value);
-    sym->value = newValue ? strdup(newValue) : NULL;
-    return sym->value != NULL || newValue == NULL;
-}
-
 bool symbolTableGetValue(SymbolTable *table, const char *name, char **outValue) {
     if (!table || !name || strlen(name) == 0) return false;
     Symbol *sym = symbolTableLookup(table, name);
@@ -145,18 +135,15 @@ bool symbolTableGetValue(SymbolTable *table, const char *name, char **outValue) 
 bool symbolTablePop(SymbolTable *table, char **outValue) {
     if (!table || !outValue || !table->head) return false;
 
-    // Tomo el símbolo de la cabeza
     Symbol *sym = table->head;
     table->head = sym->next;
 
-    // Copio el valor al buffer de salida
     if (sym->value) {
         *outValue = strdup(sym->value);
     } else {
         *outValue = NULL;
     }
 
-    // Libero todos los campos de la entrada
     free(sym->name);
     free(sym->value);
     free(sym);

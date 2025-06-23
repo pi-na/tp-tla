@@ -238,7 +238,6 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
             char * attrValue = pair->value->data.stringValue;
             char * attrString = NULL;
             
-            // Crear string del atributo
             char *lower = _toLowerCase(attrName);
             if (asprintf(&attrString, " %s=\"%s\"", lower, attrValue) == -1) {
                 logError(_logger, "Failed to allocate memory for attribute string");
@@ -246,8 +245,6 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
             }
 
             free(lower);
-            
-            // Agregar al buffer
             
             size_t newSize = attributesBufferSize + strlen(attrString);
             char * newBuffer = realloc(attributesBuffer, newSize + 1);
@@ -272,22 +269,18 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
         return;
     }
     
-    // Generar HTML completo en una sola operación
     if (attributesBuffer != NULL) {
         _output(indentationLevel, "<%s%s>\n", tagName, attributesBuffer);
     } else {
         _output(indentationLevel, "<%s>\n", tagName);
     }
     
-    // Renderizar contenido
     if (contentVal != NULL) {
         _generateValue(indentationLevel + 1, contentVal);
     }
     
-    // Cerrar tag
     _output(indentationLevel, "</%s>\n", tagName);
     
-    // Limpiar buffer
     free(attributesBuffer);
 }
 
@@ -295,7 +288,7 @@ static char* _toLowerCase(const char* s) {
     if (!s) return strdup("");
     size_t len = strlen(s);
     char* result = malloc(len + 1);
-    if (!result) return NULL;  // o maneja el error como prefieras
+    if (!result) return NULL;  
     for (size_t i = 0; i < len; i++) {
         result[i] = tolower((unsigned char)s[i]);
     }
@@ -320,7 +313,6 @@ static void _generateValue(const unsigned int indentationLevel, Value * value) {
                     _output(indentationLevel, "\n");
                 }
             } else {
-                // Si quisieras imprimir otros tokens crudos:
                 const char *s = _tokenToString(value->data.tokenValue);
                 _output(indentationLevel, "%s\n", s ? s : "");
             }
@@ -381,7 +373,6 @@ void generateHtml(CompilerState * compilerState) {
 	_generateHtmlPrologue();
     // ->abstractSyntaxTree seria el nodo raiz, tipo Program
 	_generateProgram(compilerState->abstractSyntaxtTree);
-	// _generateHtmlEpilogue();
 	logDebugging(_logger, "Generation is done.");
 }
 
