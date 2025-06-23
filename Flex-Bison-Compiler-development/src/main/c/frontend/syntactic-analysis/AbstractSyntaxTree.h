@@ -28,6 +28,7 @@ typedef struct Pair Pair;
 typedef struct PairList PairList;
 typedef struct VarRef VarRef;
 
+
 /**
  * Enumeraciones para tipos de valor en JSON-HTML
  */

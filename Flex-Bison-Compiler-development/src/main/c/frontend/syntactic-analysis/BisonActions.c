@@ -1,3 +1,4 @@
+
 #include "BisonActions.h"
 #include <string.h>
 
@@ -22,47 +23,6 @@ static struct {
 } variables[MAX_VARIABLES];
 static int variableCount = 0;
 
-static void defineVariable(const char* name) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			variables[i].isDefined = true;
-			return;
-		}
-	}
-	if (variableCount < MAX_VARIABLES) {
-		variables[variableCount].name = strdup(name);
-		variables[variableCount].isDefined = true;
-		variables[variableCount].isBeingResolved = false;
-		variableCount++;
-	}
-}
-
-static boolean isVariableDefined(const char* name) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			return variables[i].isDefined;
-		}
-	}
-	return false;
-}
-
-static boolean isVariableBeingResolved(const char* name) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			return variables[i].isBeingResolved;
-		}
-	}
-	return false;
-}
-
-static void setVariableResolutionStatus(const char* name, boolean status) {
-	for (int i = 0; i < variableCount; i++) {
-		if (strcmp(variables[i].name, name) == 0) {
-			variables[i].isBeingResolved = status;
-			return;
-		}
-	}
-}
 
 static void clearVariables() {
 	for (int i = 0; i < variableCount; i++) {
@@ -197,13 +157,31 @@ Value * ArrayValueSemanticAction(Array * array) {
 	return val;
 }
 
+// action que se ejecuta para un $identifier, en contexto de un value
+// recordar VarRef es simplemente char* name
 Value * VariableRefValueSemanticAction(VarRef * varRef) {
-	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Value * val = calloc(1, sizeof(Value));
-	val->type = VAR_REF_VALUE;
-	val->data.varRefValue = varRef;
-	return val;
+    _logSyntacticAnalyzerAction(__FUNCTION__);
+
+    CompilerState *state = currentCompilerState();
+
+    char *resolvedValue;
+    if (!symbolTableGetValue(state->symbolTable, varRef->name, &resolvedValue)) {
+        logError(_logger,
+                 "Variable '%s' no definida, usando cadena vacía",
+                 varRef->name);
+        state->succeed = false;
+        resolvedValue = strdup("@@@UNDEFINED VARIABLE@@@");
+    }
+
+	free(varRef->name);
+   	free(varRef);
+
+    Value *val = calloc(1, sizeof(Value));
+    val->type = STRING_VALUE;
+    val->data.stringValue = resolvedValue;
+    return val;
 }
+
 
 Array * ArraySemanticAction(ValueList * values) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
@@ -238,13 +216,11 @@ ValueList * valueListSemanticAction(ValueList * valueList, Value * newValue) {
 	return valueList;
 }
 
-
+// action que se ejecuta si encuentro variable $identifier
 VarRef * VariableRefSemanticAction(char * name) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	VarRef * varRef = calloc(1, sizeof(VarRef));
 	varRef->name = name;
 	return varRef;
 }
-
-
 

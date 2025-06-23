@@ -6,16 +6,33 @@
       "type": "ul",
       "content": {
         "loop": {
-          "iterable": ["Hola", "Todo", "Bien?"],
+          "iterable": ["Sección A", "Sección B"],
           "iterate": {
             "type": "li",
-            "content": {
-              "type": "p",
-              "content": $iterate
-            }
+            "content": [
+              {
+                "type": "p",
+                "content": $iterate
+              },
+              {
+                "type": "ul",
+                "content": {
+                  "loop": {
+                    "iterable": ["Ítem 1", "Ítem 2", "Ítem 3"],
+                    "iterate": {
+                      "type": "li",
+                      "content": {
+                        "type": "p",
+                        "content": $iterate
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }
     }
   }
-} 
+}

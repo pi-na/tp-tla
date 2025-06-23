@@ -42,6 +42,8 @@
 %destructor { releasePair($$); } <pair>
 %destructor { releasePairList($$); } <pairList>
 %destructor { releaseVarRef($$); } <varRef>
+%destructor { if ($$) free($$); }     <keyword>
+
 
 /** Terminals. */
 %token <token> CLOSE_PARENTHESIS

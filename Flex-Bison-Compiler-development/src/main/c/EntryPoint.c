@@ -5,9 +5,9 @@
 #include "backend/domain-specific/JsonProcessor.h"
 #include "backend/code-generation/HtmlGenerator.h"
 #include "shared/CompilerState.h"
-#include "shared/Environment.h"
 #include "shared/Logger.h"
 #include "shared/String.h"
+#include "shared/symbolTable.h"
 
 /**
  * The main entry-point of the entire application. If you use "strtok" to
@@ -20,9 +20,21 @@ const int main(const int count, const char ** arguments) {
 	initializeBisonActionsModule();
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
-	//initializeCalculatorModule();
-	initializeJsonProcessorModule();
-	initializeHtmlGeneratorModule(); // Commented out since generator.c/generator.h are not being used
+	initializeSymbolTableModule();
+	SymbolTable * symbolTable = createSymbolTable();
+
+	if (count < 2) {
+		logError(logger, "Uso: %s <ruta_lista_de_simbolos> <ruta_archivo_de_salida>", arguments[0]);
+	}
+
+	const char * symbolsPath = arguments[1];
+	const char * outputPath = arguments[2];
+
+	initializeHtmlGeneratorModule(outputPath);
+
+	if(!symbolTableLoadFromFile(symbolTable, symbolsPath)){
+		logError(logger, "Error cargando símbolos desde '%s'", symbolsPath);
+	}
 
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
@@ -33,36 +45,32 @@ const int main(const int count, const char ** arguments) {
 	CompilerState compilerState = {
 		.abstractSyntaxtTree = NULL,
 		.succeed = false,
-		.value = 0
+		.value = 0,
+		.symbolTable = symbolTable
 	};
 	const SyntacticAnalysisStatus syntacticAnalysisStatus = parse(&compilerState);
 	CompilationStatus compilationStatus = SUCCEED;
 	Program * program = compilerState.abstractSyntaxtTree;
+
 	if (syntacticAnalysisStatus == ACCEPT) {
-		logDebugging(logger, "Processing JSON program...");
-		ProcessingResult processingResult = processProgram(program);
-		if (processingResult.succeed) {
-			logDebugging(logger, "Generating HTML...");
-			generateHtml(&compilerState, &processingResult);
-		} else {
-			logError(logger, "Failed to process the JSON program.");
-			compilationStatus = FAILED;
-		}
+		logDebugging(logger, "Generating code...");
+		generateHtml(&compilerState);
 	}
 	else {
 		logError(logger, "The syntactic-analysis phase rejects the input program.");
 		compilationStatus = FAILED;
 	}
+
 	logDebugging(logger, "Releasing AST resources...");
 	releaseProgram(program);
 	logDebugging(logger, "Releasing modules resources...");
-	shutdownHtmlGeneratorModule(); // Commented out since generator.c/generator.h are not being used
-	shutdownJsonProcessorModule();
-	//shutdownCalculatorModule();
+	shutdownHtmlGeneratorModule();
 	shutdownAbstractSyntaxTreeModule();
 	shutdownSyntacticAnalyzerModule();
 	shutdownBisonActionsModule();
 	shutdownFlexActionsModule();
+	shutdownSymbolTableModule();
+	destroySymbolTable(compilerState.symbolTable);
 	logDebugging(logger, "Compilation is done.");
 	destroyLogger(logger);
 	return compilationStatus;
