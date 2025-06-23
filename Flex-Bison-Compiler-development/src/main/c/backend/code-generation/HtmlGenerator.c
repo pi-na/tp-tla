@@ -10,6 +10,7 @@ const char _indentationSize = 2;
 CompilerState * _compilerState = NULL; 
 static Logger * _logger = NULL;
 
+
 void initializeHtmlGeneratorModule() {
     _logger = createLogger("HtmlGenerator");
 }
