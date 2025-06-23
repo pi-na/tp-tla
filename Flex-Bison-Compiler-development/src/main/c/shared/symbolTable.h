@@ -23,6 +23,7 @@ bool symbolTableLoadFromFile(SymbolTable *table, const char *filename);
 
 Symbol*      symbolTableLookup(SymbolTable *table, const char *name);
 Symbol*      symbolTableInsert(SymbolTable *table, const char *name, const char *initialValue);
+Symbol* symbolTablePush(SymbolTable *table, const char *name, const char *initialValue);
 
 bool symbolTableSetValue(SymbolTable *table, const char *name, const char *newValue);
 

@@ -108,6 +108,22 @@ Symbol* symbolTableInsert(SymbolTable *table, const char *name, const char *init
     return sym;
 }
 
+Symbol* symbolTablePush(SymbolTable *table, const char *name, const char *initialValue){
+    if (!table || !name || strlen(name) == 0) return NULL;
+
+    logDebugging(_logger, "Pushing symbol: %s = %s", name,
+                 initialValue ? initialValue : "(null)");
+
+    Symbol *sym = calloc(1, sizeof(Symbol));
+    if (!sym) return NULL;
+
+    sym->name  = strdup(name);
+    sym->value = initialValue ? strdup(initialValue) : NULL;
+    sym->next  = table->head;
+    table->head = sym;
+    return sym;
+}
+
 bool symbolTableSetValue(SymbolTable *table,
                          const char *name,
                          const char *newValue) {

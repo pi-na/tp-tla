@@ -109,60 +109,56 @@ static void _generateObject(const unsigned int indentationLevel, Object * object
     attributesBuffer[0] = '\0';
     size_t attributesBufferSize = 0;
     
-    // extraer type, content y acumular atributos
     for(PairList * current = object->pairs; current != NULL; current = current->next) {
         Pair * pair = current->pair;
         
-        // DEBUG: Print token type
         logDebugging(_logger, "Processing pair with key type: %d (TYPE=%d)", pair->key->type, TYPE);
         
-        // TODO: Procesar loop en otra funcion!
         if (pair->key->type == LOOP) {
-    // 1) coger el objeto del loop
-    Object *loopObj = pair->value->data.objectValue;
-    Array  *iterableArray    = NULL;
-    Object *iterateTemplate  = NULL;
+            Object *loopObj = pair->value->data.objectValue;
+            Array  *iterableArray    = NULL;
+            Object *iterateTemplate  = NULL;
 
-    // 2) buscar “iterable” y “iterate”
-    for (PairList *pl = loopObj->pairs; pl; pl = pl->next) {
-        if (pl->pair->key->type == ITERABLE
-         && pl->pair->value->type == ARRAY_VALUE) {
-            iterableArray = pl->pair->value->data.arrayValue;
+            for (PairList *pl = loopObj->pairs; pl; pl = pl->next) {
+                if (pl->pair->key->type == ITERABLE
+                && pl->pair->value->type == ARRAY_VALUE) {
+                    iterableArray = pl->pair->value->data.arrayValue;
+                }
+                else if (pl->pair->key->type == ITERATE
+                    && pl->pair->value->type == OBJECT_VALUE) {
+                    iterateTemplate = pl->pair->value->data.objectValue;
+                }
+            }
+
+            if (!iterableArray || !iterateTemplate) {
+                logError(_logger, "Invalid LOOP: falta iterable o iterate");
+                free(attributesBuffer);
+                return;
+            }
+
+            // por cada elemento, push $iterator, generate, pop
+            for (ValueList *vl = iterableArray->values; vl; vl = vl->next) {
+                Value *v = vl->value;
+
+                if (v->type != STRING_VALUE) {
+                    logError(_logger, "Elemento no es STRING_VALUE: %d", v->type);
+                    continue;
+                }
+
+                symbolTablePush(
+                    _compilerState->symbolTable,
+                    "ITERATOR_REF",
+                    v->data.stringValue
+                );
+                _generateObject(indentationLevel + 1, iterateTemplate);
+                char *popped = NULL;
+                symbolTablePop(_compilerState->symbolTable, &popped);
+                free(popped);
+            }
+
+            free(attributesBuffer);
+            return;
         }
-        else if (pl->pair->key->type == ITERATE
-              && pl->pair->value->type == OBJECT_VALUE) {
-            iterateTemplate = pl->pair->value->data.objectValue;
-        }
-    }
-    if (!iterableArray || !iterateTemplate) {
-        logError(_logger, "Invalid LOOP: falta iterable o iterate");
-        free(attributesBuffer);
-        return;
-    }
-
-    // 3) por cada elemento, insertar, generar y sacar
-    for (ValueList *vl = iterableArray->values; vl; vl = vl->next) {
-        Value *v = vl->value;
-        if (v->type != STRING_VALUE) {
-            logError(_logger, "Elemento no es STRING_VALUE: %d", v->type);
-            continue;
-        }
-        symbolTableInsert(
-            _compilerState->symbolTable,
-            "ITERATOR_REF",
-            v->data.stringValue
-        );
-        _generateObject(indentationLevel + 1, iterateTemplate);
-        char *popped = NULL;
-        symbolTablePop(_compilerState->symbolTable, &popped);
-        free(popped);
-    }
-
-    free(attributesBuffer);
-    return;
-}
-
-        
 
         if (pair->key->type == TYPE) {
             if (pair->value->type == STRING_VALUE) {
